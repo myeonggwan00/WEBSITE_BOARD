@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Board</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link rel="stylesheet" th:href="@{/css/boardForm.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
+          integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<div th:replace="~{fragement/fragmentHeader :: header}"></div>
+<div class="container">
+    <h2 class="writing-header">게시판 글</h2>
+    <form id="form" class="frm" action="" th:object="${post}" method="post">
+        <input type="hidden" th:field="*{bno}">
+
+        <input type="text" th:field="*{title}" placeholder="제목을 입력해 주세요." readonly><br>
+        <textarea rows="20" th:field="*{content}" placeholder="내용을 입력해 주세요." readonly></textarea><br>
+
+        <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno})}'|"><i class="fa fa-edit"></i> 수정</button>
+        <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}" onclick="submitForm('delete')"><i class="fa fa-trash"></i> 삭제</button>
+        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board}'|"><i class="fa fa-bars"></i> 목록</button>
+    </form>
+</div>
+<script>
+    function submitForm(action) {
+        // action 값을 수정
+        document.getElementById("form").action = (action === 'modify') ? "/board/modify" : "/board/delete";
+        // 폼 제출
+        document.getElementById("form").submit();
+    }
+</script>
+</body>
+</html>

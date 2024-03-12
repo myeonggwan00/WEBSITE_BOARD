@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div id="menu" th:fragment="header">
+        <ul>
+            <li id="logo" th:text="#{homePage.developer}">Developer</li>
+            <li><a th:href="@{/}" th:text="#{homePage.home}">Home</a></li>
+            <li><a th:href="@{/board}" th:text="#{homePage.board}">Board</a></li>
+            <li><a th:href="${session.status} ? @{/logout} : @{/login}" th:text="${session.status} ? #{homePage.logout} : #{homePage.login}">login</a></li>
+            <li><a th:href="@{/register}" th:text="#{homePage.register}">Sign in</a></li>
+            <li><a href=""><i class="fas fa-search small"></i></a></li>
+        </ul>
+    </div>
+</body>
+</html>

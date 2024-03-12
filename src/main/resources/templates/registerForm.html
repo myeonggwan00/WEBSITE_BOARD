@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/registerForm.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
+        integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Register</title>
+</head>
+<body>
+<form th:action="@{/register}" th:object="${member}" method="post">
+  <div class="title" th:text="#{registerPage.title}">Register</div>
+
+  <div class="id-box">
+    <label for="id" th:text="#{registerPage.id}">아이디</label>
+    <div class="msg" th:if="${#fields.hasErrors('id')}"><i class="fa fa-exclamation-circle"></i><span th:errors="*{id}">아이디 오류 메시지</span></div>
+    <br>
+    <input class="input-field" type="text" id="id" th:field="*{id}">
+  </div>
+
+  <div class="pwd-box">
+    <label for="pwd" th:text="#{registerPage.pwd}">비밀번호</label>
+    <div class="msg" th:if="${#fields.hasErrors('pwd')}"><i class="fa fa-exclamation-circle"></i><span th:errors="*{pwd}">비밀번호 오류 메시지</span></div>
+    <br>
+    <input class="input-field" type="text" id="pwd" th:field="*{pwd}">
+  </div>
+
+  <div class="userName-box">
+    <label for="userName" th:text="#{registerPage.name}">이름</label>
+    <div class="msg" th:if="${#fields.hasErrors('userName')}"><i class="fa fa-exclamation-circle"></i><span th:errors="*{userName}">이름 오류 메시지</span></div>
+    <br>
+    <input class="input-field" type="text" id="userName" th:field="*{userName}">
+  </div>
+
+  <button th:text="#{registerPage.btn.register}">회원 가입</button>
+
+</form>
+</body>
+</html>

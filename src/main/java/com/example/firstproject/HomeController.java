@@ -29,7 +29,7 @@ public class HomeController {
      * 홈 화면 보여주는 메서드
      */
     @GetMapping("/")
-    public String home(HttpServletRequest request) {
+    public String home() {
         return "home";
     }
 
@@ -88,6 +88,7 @@ public class HomeController {
      */
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginMember loginMember, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
+        String redirectURL = request.getParameter("redirectURL");
         Optional<Member> optionalMember = memberRepository.findById(loginMember.getId());
 
         if(optionalMember.isEmpty() || !loginMember.getId().equals(optionalMember.get().getId()) || !loginMember.getPwd().equals(optionalMember.get().getPwd())) {
@@ -130,9 +131,9 @@ public class HomeController {
         log.info("LOGIN loginMember={}", optionalMember.get());
 
         // 로그인 안한 상채에서 게시판 글 쓰기 버튼을 누른 경우
-        if(request.getParameter("url") != null) {
+        if(redirectURL != null) {
             // 게시판 글 쓰기 화면으로 이동
-            return "redirect:" + request.getParameter("url");
+            return "redirect:" + redirectURL;
         }
 
         return "redirect:/";
@@ -158,16 +159,7 @@ public class HomeController {
      * 회원이 작성한 게시글 정보를 처리하기 위해서 비어있는 게시글 객체를 저장소(Model)에 저장해서 폼으로 넘겨준다.
      */
     @GetMapping("/board/write")
-    public String board(Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, HttpServletRequest request) {
-        /**
-         * 로그인 여부를 확인
-         * 만약 로그인이 되어있지 않으면 게시글을 작성하면 안되므로 로그인 창을 보여주도록 설정
-         * 반대로 로그인이 되어있으면 게시글을 작성할 수 있으므로 게시글 작성 화면을 보여주도록 설정
-         */
-        if(loginMember == null) {
-            return "redirect:/login?url="+request.getRequestURI();
-        }
-
+    public String board(Model model) {
         model.addAttribute("post", new Post());
 
         return "addBoard";

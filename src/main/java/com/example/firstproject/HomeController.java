@@ -279,4 +279,15 @@ public class HomeController {
 
         return "home";
     }
+
+    @GetMapping("/account/delete")
+    public String deleteAccount(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member member, HttpServletRequest request) {
+        memberRepository.removeByNo(member.getNo());
+
+        request.getSession().invalidate();
+
+        log.info("회원탈퇴 성공");
+
+        return "redirect:/";
+    }
 }

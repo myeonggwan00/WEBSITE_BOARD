@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>BoardList</title>
@@ -40,8 +40,8 @@
                 <td class="no" th:text="${post.bno}">1</td>
                 <td class="title"><a th:href="@{/board/{param}(param=${post.bno})}"><span th:text="${post.title}">테스트 진행중</span></a></td>
                 <td class="writer" th:text="${post.userName}">테스터</td>
-                <td class="regdate" th:text="${post.registerTime}">22:08:12</td>
-                <td class="viewcnt" th:text="${post.viewCnt}">1</td>
+                <td class="regdate" th:text="${{post.registerTime}}">22:08:12</td>
+                <td class="viewcnt" th:text="${{post.viewCnt}}">1</td>
             </tr>
         </table>
         <br>

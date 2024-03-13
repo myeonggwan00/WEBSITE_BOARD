@@ -2,9 +2,9 @@ package com.example.firstproject;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +16,11 @@ public class Post {
     @NotEmpty
     private String content;
     private String userName;
-    private String registerTime;
 
+    @DateTimeFormat(pattern = "yy-MM-dd HH:mm")
+    private LocalDateTime registerTime;
+
+    @NumberFormat(pattern = "###,###")
     private Long viewCnt = 0L;
 
     public Post() {

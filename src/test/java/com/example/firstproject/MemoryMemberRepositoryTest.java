@@ -1,6 +1,7 @@
 package com.example.firstproject;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,11 @@ class
 MemoryMemberRepositoryTest {
     @Autowired
     MemberRepository memberRepository;
+
+    @BeforeEach
+    public void init() {
+        memberRepository.removeAll();
+    }
 
     @Test
     void add() {
@@ -48,9 +54,8 @@ MemoryMemberRepositoryTest {
 
         memberRepository.add(newMember);
 
-        Member member = new Member("test", "test123", null);
 
-        Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findById(newMember.getId()).get();
 
         log.info("findMember={}", findMember);
 

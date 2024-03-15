@@ -46,7 +46,7 @@
         </table>
         <br>
         <div class="paging-container">
-가            <div class="paging" >
+            <div class="paging" >
                 <a class="left-arrow" th:if="${pageHandler.isShowPrev()}"
                    th:href="@{/board(page=${pageHandler.getBeginPage()-1}, pageSize=${pageHandler.pageSize})}"><span>&lt;</span></a>
                 <a class="number" th:each="i : ${#numbers.sequence(pageHandler.beginPage, pageHandler.endPage)}"

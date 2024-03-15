@@ -28,11 +28,6 @@ public class PostMemoryRepository implements PostRepository {
     }
 
     @Override
-    public void remove(Long bno) {
-        postStore.remove(bno);
-    }
-
-    @Override
     public Optional<Post> findByBno(Long bno) {
         return Optional.ofNullable(postStore.get(bno));
     }
@@ -41,5 +36,39 @@ public class PostMemoryRepository implements PostRepository {
     public List<Post> findAll() {
         Collection<Post> postList = postStore.values();
         return postList.stream().toList();
+    }
+
+    @Override
+    public void remove(Long bno) {
+        postStore.remove(bno);
+    }
+
+    @Override
+    public List<Post> selectPage(Map<String, Integer> map) {
+        Integer offset = map.get("offset");
+        Integer pageSize = map.get("pageSize");
+
+        List<Post> posts = postStore.values().stream().toList();
+        List<Post> pagePostStore = new ArrayList<>();
+
+        int offsetCheck = 1;
+        int sizeCheck = 1;
+
+        for (Post post : posts) {
+            if(offsetCheck > offset) {
+                if(sizeCheck <= pageSize) {
+                    pagePostStore.add(post);
+                }
+                sizeCheck++;
+            }
+            offsetCheck++;
+        }
+
+        return pagePostStore;
+    }
+
+    @Override
+    public int getCount() {
+        return postStore.values().size();
     }
 }

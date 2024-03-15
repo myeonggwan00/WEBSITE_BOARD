@@ -12,7 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -145,10 +147,19 @@ public class HomeController {
      * 회원이 작성한 게시글 정보를 처리하기 위해서 게시글이 저장되어 있는 저장소에서 모든 정보를 얻고 저장소(Model)에 담아서 화면으로 전송한다.
      */
     @GetMapping("/board")
-    public String boardList(Model model) {
-        List<Post> posts = postRepository.findAll();
+    public String boardList(Model model, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+        int totalCnt = postRepository.getCount();
+        PageHandler pageHandler = new PageHandler(totalCnt, page, pageSize);
+
+        Map<String, Integer> map = new HashMap<>();
+
+        map.put("offset", (page - 1) * pageSize);
+        map.put("pageSize", pageSize);
+
+        List<Post> posts = postRepository.selectPage(map);
 
         model.addAttribute("posts", posts);
+        model.addAttribute("pageHandler", pageHandler);
 
         return "boardList";
     }

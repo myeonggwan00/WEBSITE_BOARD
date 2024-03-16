@@ -147,7 +147,7 @@ public class HomeController {
      * 회원이 작성한 게시글 정보를 처리하기 위해서 게시글이 저장되어 있는 저장소에서 모든 정보를 얻고 저장소(Model)에 담아서 화면으로 전송한다.
      */
     @GetMapping("/board")
-    public String boardList(Model model, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer pageSize) {
+    public String boardList(Model model, Integer page, Integer pageSize) {
         int totalCnt = postRepository.getCount();
         PageHandler pageHandler = new PageHandler(totalCnt, page, pageSize);
 
@@ -236,7 +236,7 @@ public class HomeController {
      * 게시글 수정 및 등록 작업을 하는 메서드
      */
     @PostMapping("/board/{bno}/edit")
-    public String modifyBoard(@PathVariable Long bno, @Validated @ModelAttribute Post updatePost, BindingResult bindingResult) {
+    public String modifyBoard(@PathVariable Long bno, Integer page, Integer pageSize, @Validated @ModelAttribute Post updatePost, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return "editBoard";
         }
@@ -244,7 +244,7 @@ public class HomeController {
 
         log.info("MODIFY updatePost={}", updatePost);
 
-        return "redirect:/board";
+        return "redirect:/board?page=" + page + "&pageSize=" + pageSize;
     }
 
 
@@ -252,10 +252,10 @@ public class HomeController {
      * 게시글 삭제 작업을 하는 메서드
      */
     @PostMapping("/board/delete")
-    public String deleteBoard(@ModelAttribute Post post) {
+    public String deleteBoard(@ModelAttribute Post post, Integer page, Integer pageSize) {
         postRepository.remove(post.getBno());
 
-        return "redirect:/board";
+        return "redirect:/board?page=" + page + "&pageSize=" + pageSize;
     }
 
     /**

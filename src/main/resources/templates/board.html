@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Board</title>
@@ -13,24 +13,16 @@
 <div th:replace="~{fragement/fragmentHeader :: header}"></div>
 <div class="container">
     <h2 class="writing-header">게시판 글</h2>
-    <form id="form" class="frm" action="" th:object="${post}" method="post">
+    <form id="form" class="frm" th:action="@{/board/delete(page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
         <input type="hidden" th:field="*{bno}">
 
         <input type="text" th:field="*{title}" placeholder="제목을 입력해 주세요." readonly><br>
         <textarea rows="20" th:field="*{content}" placeholder="내용을 입력해 주세요." readonly></textarea><br>
 
-        <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno})}'|"><i class="fa fa-edit"></i> 수정</button>
-        <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}" onclick="submitForm('delete')"><i class="fa fa-trash"></i> 삭제</button>
-        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board}'|"><i class="fa fa-bars"></i> 목록</button>
+        <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
+        <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
+        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
     </form>
 </div>
-<script>
-    function submitForm(action) {
-        // action 값을 수정
-        document.getElementById("form").action = (action === 'modify') ? "/board/modify" : "/board/delete";
-        // 폼 제출
-        document.getElementById("form").submit();
-    }
-</script>
 </body>
 </html>

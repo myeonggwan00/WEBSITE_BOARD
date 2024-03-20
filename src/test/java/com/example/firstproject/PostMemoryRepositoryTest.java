@@ -1,5 +1,7 @@
 package com.example.firstproject;
 
+import com.example.firstproject.domain.Post;
+import com.example.firstproject.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -25,7 +27,7 @@ public class PostMemoryRepositoryTest {
 
     @Test @Order(1)
     public void save() {
-        Post post = new Post("save test", "test");
+        Post post = new Post("save test", "test", "tester");
 
         postRepository.save(post);
 
@@ -38,7 +40,7 @@ public class PostMemoryRepositoryTest {
 
         log.info("before={}", updateBeforePost);
 
-        Post updatePost = new Post("modify test", "test");
+        Post updatePost = new Post("modify test", "test", "tester");
 
         postRepository.modify(1L, updatePost);
 
@@ -73,11 +75,13 @@ public class PostMemoryRepositoryTest {
 
     @Test @Order(5)
     public void selectPage() {
+        List<Post> findPost = postRepository.findAll();
+
         Map<String, Integer> map = new HashMap<>();
         map.put("offset", 10);
         map.put("pageSize", 10);
 
-        List<Post> posts = postRepository.selectPage(map);
+        List<Post> posts = postRepository.selectPage(map, findPost);
 
         for (Post post : posts) {
             log.info("post={}", post);

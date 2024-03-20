@@ -1,5 +1,7 @@
 package com.example.firstproject;
 
+import com.example.firstproject.domain.Member;
+import com.example.firstproject.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ MemoryMemberRepositoryTest {
 
     @BeforeEach
     public void init() {
-        memberRepository.removeAll();
+        memberRepository.deleteAll();
     }
 
     @Test
@@ -95,7 +97,7 @@ MemoryMemberRepositoryTest {
         memberRepository.add(newMember2);
         memberRepository.add(newMember3);
 
-        memberRepository.removeByNo(newMember1.getNo());
+        memberRepository.deleteByNo(newMember1.getNo());
 
         List<Member> result = memberRepository.findAll();
 
@@ -116,7 +118,7 @@ MemoryMemberRepositoryTest {
         memberRepository.add(newMember2);
         memberRepository.add(newMember3);
 
-        memberRepository.removeAll();
+        memberRepository.deleteAll();
 
         List<Member> result = memberRepository.findAll();
 

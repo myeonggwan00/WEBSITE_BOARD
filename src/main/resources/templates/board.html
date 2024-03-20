@@ -21,7 +21,7 @@
 
         <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
         <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
-        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
+        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
     </form>
 </div>
 </body>

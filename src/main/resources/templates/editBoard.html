@@ -27,7 +27,7 @@
 
         <button id="writeBtn" class="btn btn-write"><i class="fa fa-pencil"></i> 등록</button>
         <button id="cancelBtn" class="btn btn-cancel" th:onclick="|location.href='@{/board/{bno}(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|" type="button"><i class="fa-solid fa-xmark"></i> 취소</button>
-        <button id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(page=${param.page}, pageSize=${param.pageSize})}'|" type="button"><i class="fa fa-bars"></i> 목록</button>
+        <button id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|" type="button"><i class="fa fa-bars"></i> 목록</button>
     </form>
 </div>
 </body>

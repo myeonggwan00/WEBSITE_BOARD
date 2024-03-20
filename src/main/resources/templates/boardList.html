@@ -14,13 +14,12 @@
 <div style="text-align:center">
     <div class="board-container">
         <div class="search-container">
-            <form th:action class="search-form" method="get">
-                <select class="search-option" name="option">
-                    <option value="A" th:text="#{boardPage.selectOption.first}">제목+내용</option>
-                    <option value="T" th:text="#{boardPage.selectOption.second}">제목만</option>
-                    <option value="W" th:text="#{boardPage.selectOption.third}">작성자</option>
+            <form class="search-form" th:action th:object="${searchCondition}" method="get">
+                <select class="search-option" th:field="*{option}">
+                    <option th:each="searchOption : ${searchOptions}" th:value="${searchOption.option}"
+                            th:text="${searchOption.getDisplayName()}" th:selected="${searchOption.getOption() == searchCondition.getOption()}"></option>
                 </select>
-                <input type="text" name="keyword" class="search-input" th:placeholder="#{boardPage.find.placeholder}">
+                <input type="text" name="keyword" class="search-input" th:value="${searchCondition.getKeyword()}" th:placeholder="#{boardPage.find.placeholder}">
                 <input type="submit" class="search-button" th:value="#{boardPage.btn.find}">
             </form>
             <button id="writeBtn" class="btn-write" th:onclick="|location.href='@{/board/write}'|">
@@ -32,13 +31,13 @@
             <tr>
                 <th class="no" th:text="#{boardPage.boardTable.no}">번호</th>
                 <th class="title" th:text="#{boardPage.boardTable.title}">제목</th>
-                <th class="writer" th:text="#{boardPage.boardTable.name}">이름</th>
+                <th class="writer" th:text="#{boardPage.boardTable.writer}">작성자</th>
                 <th class="regdate" th:text="#{boardPage.boardTable.regDate}">등록일</th>
                 <th class="viewcnt" th:text="#{boardPage.boardTable.viewCnt}">조회수</th>
             </tr>
             <tr th:each="post : ${posts}">
                 <td class="no" th:text="${post.bno}">1</td>
-                <td class="title"><a th:href="@{/board/{param}(param=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}"><span th:text="${post.title}">테스트 진행중</span></a></td>
+                <td class="title"><a th:href="@{/board/{param}(param=${post.bno}, option=${searchCondition.getOption()}, keyword=${searchCondition.getKeyword()}, page=${param.page}, pageSize=${param.pageSize})}"><span th:text="${post.title}">테스트 진행중</span></a></td>
                 <td class="writer" th:text="${post.userName}">테스터</td>
                 <td class="regdate" th:text="${{post.registerTime}}">22:08:12</td>
                 <td class="viewcnt" th:text="${{post.viewCnt}}">1</td>
@@ -50,7 +49,7 @@
                 <a class="left-arrow" th:if="${pageHandler.isShowPrev()}"
                    th:href="@{/board(page=${pageHandler.getBeginPage()-1}, pageSize=${pageHandler.pageSize})}"><span>&lt;</span></a>
                 <a class="number" th:each="i : ${#numbers.sequence(pageHandler.beginPage, pageHandler.endPage)}"
-                   th:href="@{/board(page=${i}, pageSize=${pageHandler.pageSize})}" th:text="${i}"></a>
+                   th:href="@{/board(option=${searchCondition.getOption()},keyword=${searchCondition.getKeyword()}, page=${i}, pageSize=${pageHandler.pageSize})}" th:text="${i}"></a>
                 <a class="right-arrow" th:if="${pageHandler.isShowNext()}"
                    th:href="@{/board(page=${pageHandler.getEndPage()+1}, pageSize=${pageHandler.pageSize})}"><span>&gt;</span></a>
             </div>

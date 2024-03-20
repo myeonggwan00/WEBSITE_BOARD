@@ -1,4 +1,4 @@
-package com.example.firstproject;
+package com.example.firstproject.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,23 +17,26 @@ public class PageHandler {
     private boolean showPrev; // 이전 페이지로 이동하는 링크를 보여줄 것인지에 대한 여부
     private boolean showNext; // 다음 페이지로 이동하는 링크를 보여줄 것인지에 대한 여부
 
+    public PageHandler() {
+    }
+
     public PageHandler(int totalCnt, int page) {
         this(totalCnt, page, 10);
     }
 
-    public PageHandler(int totalCnt, int page, int pageSize) {
+    public PageHandler(int totalCnt, int page, int pageSize) { // 0 ,1, 10
         this.totalCnt = totalCnt;
         this.page = page;
         this.pageSize = pageSize;
 
         totalPage = (int)Math.ceil(totalCnt / (double)pageSize);
         beginPage = (page - 1) / naviSize * naviSize + 1;
-        endPage = Math.min(beginPage + naviSize - 1, totalPage);
+        endPage = totalPage == 0 ? 1 : Math.min(beginPage + naviSize - 1, totalPage);
         showPrev = beginPage != 1;
-        showNext = endPage != totalPage;
+        showNext = totalPage == 0 ? false : endPage != totalPage;
     }
 
-    void print() {
+    public void print() {
         System.out.println("page = " + page);
         System.out.print(showPrev ? "[PREV] " : "");
         for(int i = beginPage; i <= endPage; i++) {

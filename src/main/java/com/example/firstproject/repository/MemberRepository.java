@@ -1,5 +1,7 @@
-package com.example.firstproject;
+package com.example.firstproject.repository;
 
+
+import com.example.firstproject.domain.Member;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,7 @@ public interface MemberRepository {
 
     List<Member> findAll();
 
-    void removeByNo(Long no);
+    void deleteByNo(Long no);
 
-    void removeAll();
+    void deleteAll();
 }

@@ -1,5 +1,7 @@
-package com.example.firstproject;
+package com.example.firstproject.repository;
 
+import com.example.firstproject.domain.Member;
+import com.example.firstproject.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -51,12 +53,12 @@ public class MemoryMemberRepository implements MemberRepository {
     }
 
     @Override
-    public void removeByNo(Long no) {
+    public void deleteByNo(Long no) {
         store.remove(no);
     }
 
     @Override
-    public void removeAll() {
+    public void deleteAll() {
         store.clear();
     }
 }

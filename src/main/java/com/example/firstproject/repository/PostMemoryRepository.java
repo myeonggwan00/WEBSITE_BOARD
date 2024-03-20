@@ -1,5 +1,6 @@
-package com.example.firstproject;
+package com.example.firstproject.repository;
 
+import com.example.firstproject.domain.Post;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -44,17 +45,16 @@ public class PostMemoryRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> selectPage(Map<String, Integer> map) {
+    public List<Post> selectPage(Map<String, Integer> map, List<Post> findPost) {
         Integer offset = map.get("offset");
         Integer pageSize = map.get("pageSize");
 
-        List<Post> posts = postStore.values().stream().toList();
         List<Post> pagePostStore = new ArrayList<>();
 
         int offsetCheck = 1;
         int sizeCheck = 1;
 
-        for (Post post : posts) {
+        for (Post post : findPost) {
             if(offsetCheck > offset) {
                 if(sizeCheck <= pageSize) {
                     pagePostStore.add(post);
@@ -65,6 +65,48 @@ public class PostMemoryRepository implements PostRepository {
         }
 
         return pagePostStore;
+    }
+
+    @Override
+    public List<Post> findByTitle(String keyword) {
+        List<Post> posts = postStore.values().stream().toList();
+        List<Post> storage = new ArrayList<>();
+
+        for (Post post : posts) {
+            if (post.getTitle().contains(keyword)) {
+                storage.add(post);
+            }
+        }
+
+        return storage;
+    }
+
+    @Override
+    public List<Post> findByContent(String keyword) {
+        List<Post> posts = postStore.values().stream().toList();
+        List<Post> storage = new ArrayList<>();
+
+        for (Post post : posts) {
+            if (post.getContent().contains(keyword)) {
+                storage.add(post);
+            }
+        }
+
+        return storage;
+    }
+
+    @Override
+    public List<Post> findByWriter(String keyword) {
+        List<Post> posts = postStore.values().stream().toList();
+        List<Post> storage = new ArrayList<>();
+
+        for (Post post : posts) {
+            if (post.getUserName().contains(keyword)) {
+                storage.add(post);
+            }
+        }
+
+        return storage;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.firstproject;
+package com.example.firstproject.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

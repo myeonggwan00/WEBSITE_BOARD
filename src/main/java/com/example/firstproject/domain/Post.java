@@ -1,4 +1,4 @@
-package com.example.firstproject;
+package com.example.firstproject.domain;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,9 +26,10 @@ public class Post {
     public Post() {
     }
 
-    public Post(String title, String content) {
+    public Post(String title, String content, String userName) {
         this.title = title;
         this.content = content;
+        this.userName = userName;
     }
 
     public void increaseViewCnt() {

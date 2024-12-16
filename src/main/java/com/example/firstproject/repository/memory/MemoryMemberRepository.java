@@ -1,4 +1,4 @@
-package com.example.firstproject.repository;
+package com.example.firstproject.repository.memory;
 
 import com.example.firstproject.domain.Member;
 import com.example.firstproject.repository.MemberRepository;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
+//@Repository
 @Slf4j
 public class MemoryMemberRepository implements MemberRepository {
     private static final Map<Long, Member> store = new HashMap<>();

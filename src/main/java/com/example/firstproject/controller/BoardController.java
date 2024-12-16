@@ -3,6 +3,7 @@ package com.example.firstproject.controller;
 import com.example.firstproject.SessionConst;
 import com.example.firstproject.domain.*;
 import com.example.firstproject.service.BoardService;
+import com.example.firstproject.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @ModelAttribute("searchOptions")
     public List<SearchOption> searchOptions() {
@@ -40,10 +42,11 @@ public class BoardController {
      */
     @GetMapping("/board")
     public String boardList(Model model, @RequestParam(defaultValue = "1") Integer page,  @RequestParam(defaultValue = "10") Integer pageSize, SearchCondition sc) {
-        List<Post> findPost = boardService.getPostsBySearchOption(sc);
+//        List<Post> findPost = boardService.getPostsBySearchOption(sc);
         Map<String, Integer> map = boardService.getPageInfo(page, pageSize);
-        List<Post> posts = boardService.getPostsByPage(map, findPost);
-        PageHandler pageHandler = boardService.getPageHandler(findPost, page, pageSize);
+//        List<Post> posts = boardService.getPostsByPage(map, findPost);
+        List<Post> posts = boardService.getPostsByPage(map, sc);
+        PageHandler pageHandler = boardService.getPageHandler(page, pageSize);
 
         model.addAttribute("posts", posts);
         model.addAttribute("pageHandler", pageHandler);
@@ -77,6 +80,7 @@ public class BoardController {
             return "addBoard";
 
         log.info("WRITE loginMember={}", loginMember);
+        log.info("post={}", post);
 
         boardService.savePost(loginMember, post);
 
@@ -87,13 +91,24 @@ public class BoardController {
      * 게시글을 선택했을 때 해당 게시글을 보여주는 메서드
      */
     @GetMapping("/board/{bno}")
-    public String selectPost(@PathVariable Long bno, Model model) {
+    public String selectPost(@PathVariable Long bno, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
+        Comment comment = new Comment();
+
         Post selectedPost = boardService.getPostInfo(bno);
+
         boardService.increaseViewCnt(selectedPost);
 
-        log.info("READ post={}", selectedPost);
+        List<Comment> comments = commentService.getCommentsByPostBno(bno);
+        List<Comment> replies = commentService.getReplies();
+//        log.info("comment={}", comments);
+//        log.info("loginMember={}", loginMember);
+//        log.info("READ post={}", selectedPost);
 
         model.addAttribute("post", selectedPost);
+        model.addAttribute("comments", comments);
+        model.addAttribute("replies", replies);
+        model.addAttribute("comment", comment);
+        model.addAttribute("loginMember", loginMember);
 
         return "board";
     }

@@ -4,6 +4,7 @@ import com.example.firstproject.SessionConst;
 import com.example.firstproject.domain.LoginMember;
 import com.example.firstproject.domain.Member;
 import com.example.firstproject.repository.MemberRepository;
+import com.example.firstproject.service.LoginManagementService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ public class LoginController {
      * MemberRepository 의존성 관계 주입
      */
     private final MemberRepository memberRepository;
+    private final LoginManagementService loginManagementService;
 
     /**
      * 로그아웃 요청을 처리하는 메서드
@@ -39,14 +41,7 @@ public class LoginController {
      */
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
-        if(session != null) {
-            // 세션 종료
-            session.invalidate();
-
-            log.info("로그아웃 성공");
-        }
+        loginManagementService.processLogout(request);
 
         return "redirect:/";
     }
@@ -58,17 +53,7 @@ public class LoginController {
      */
     @GetMapping("/login")
     public String login(Model model, @CookieValue(name = "memberId", required = false) String memberId) {
-        LoginMember loginMember;
-
-        // 쿠키에 저장된 값을 조회해서 얻은 값이 null인 경우 -> 로그인 기억 기능을 사용X
-        if(memberId == null) {
-            loginMember = new LoginMember();
-        }
-        // 쿠키에 저장된 값을 조회해서 얻은 값이 null이 아닌 경우 -> 로그인 기억 기능을 사용
-        else {
-            loginMember = new LoginMember(memberId);
-            loginMember.setRememberId(true);
-        }
+        LoginMember loginMember = loginManagementService.processRememberIdLoginMember(memberId);
 
         model.addAttribute("loginMember", loginMember);
 
@@ -86,13 +71,10 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginMember loginMember, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) {
         String redirectURL = request.getParameter("redirectURL");
-        Optional<Member> optionalMember = memberRepository.findById(loginMember.getId());
 
-        if(optionalMember.isEmpty() || !loginMember.getId().equals(optionalMember.get().getId()) || !loginMember.getPwd().equals(optionalMember.get().getPwd())) {
-            log.info("로그인 실패");
+        Optional<Member> optionalFindMember = loginManagementService.findLoginMemberById(loginMember.getId());
 
-            bindingResult.reject("loginFail");
-        }
+        loginManagementService.processLoginFail(loginMember, bindingResult, optionalFindMember);
 
         if(bindingResult.hasErrors()) {
             loginMember.setId("");
@@ -101,31 +83,11 @@ public class LoginController {
             return "loginForm";
         }
 
-        // 로그인 기억 기능을 사용하는 경우
-        if(loginMember.isRememberId()) {
-            // 쿠키 생성
-            Cookie cookie = new Cookie("memberId", loginMember.getId());
+        loginManagementService.processRememberIdCookie(loginMember,response);
 
-            response.addCookie(cookie);
-        }
-        // 로그인 기억 기능을 사용하지 않는 경우
-        else {
-            // 쿠키 삭제
-            Cookie cookie = new Cookie("memberId", loginMember.getId());
-            cookie.setMaxAge(0);
+        loginManagementService.createSession(request, optionalFindMember);
 
-            response.addCookie(cookie);
-        }
-
-        // 세션 생성
-        HttpSession session = request.getSession();
-
-        // 세션에 정보 저장하기
-        session.setAttribute(SessionConst.LOGIN_MEMBER, optionalMember.get());
-        session.setAttribute("status", true); // 로그인 여부 확인하기 위한 작업
-
-        log.info("로그인 성공");
-        log.info("LOGIN loginMember={}", optionalMember.get());
+        log.info("LOGIN SUCCESS loginMember={}", optionalFindMember.get());
 
         // 로그인 안한 상채에서 게시판 글 쓰기 버튼을 누른 경우
         if(redirectURL != null) {
@@ -133,7 +95,6 @@ public class LoginController {
             return "redirect:" + redirectURL;
         }
 
-        return "redirect:" + request.getRequestURI();
+        return "redirect:/";
     }
-
 }

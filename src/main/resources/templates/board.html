@@ -8,21 +8,515 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
           integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <style>
+        #commentList > ul {
+            border: 1px solid rgb(235, 236, 239);
+            border-bottom: 0;
+            margin-bottom: 8px;
+            list-style-type: none !important;
+        }
+
+
+        #commentList > ul > li {
+            background: #f8f8f8;
+            /*border-bottom: 1px solid rgb(235, 236, 239);*/
+            padding: 18px 18px 0 18px;
+        }
+
+        #commentList {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        /* 댓글 리스트 부분 */
+        .comment-item {
+            position: relative;
+        }
+
+        /* 사용자 이미지 관련 CSS */
+        .comment-img {
+            font-size: 36px;
+            position: absolute;
+        }
+
+        /* 댓글 부분 CSS */
+        .comment-area {
+            border-bottom: 1px solid rgb(235, 236, 239);
+        }
+
+        /* 댓글 작성자 CSS*/
+        .commenter {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        /* 댓글 내용 부분 CSS*/
+        .comment-content {
+            overflow-wrap: break-word;
+        }
+
+        /* 댓글 작성 시간, 수정, 삭제, 답글 쓰기 부분 CSS */
+        .comment-bottom {
+            font-size: 9pt;
+            color: rgb(97, 97, 97);
+            padding: 8px 0 8px 0;
+        }
+
+        .comment-bottom > a {
+            color: rgb(97, 97, 97);
+            text-decoration: none;
+            margin: 0 6px 0 0;
+        }
+
+        /* 댓글 작성 시간(등록, 수정)*/
+        .up_date {
+            margin: 0 8px 0 0;
+        }
+
+        /*--------------------------------------------------------------*/
+
+        /* 댓글 작성창 부분 CSS */
+        #comment-writebox, #reply-writebox, #comment-modifybox {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 5px;
+        }
+
+        /* 댓글 작성창의 사용자 부분 CSS */
+        .commenter-writebox {
+            padding: 15px 20px 20px 20px;
+        }
+
+        /* 댓글 작성창의 댓글 내용 부분 CSS */
+        .comment-writebox-content > textarea, .reply-writebox-content > textarea, .comment-modifybox-content > textarea {
+            display: block;
+            width: 100%;
+            min-height: 17px;
+            padding: 0 20px;
+            border: 0;
+            outline: 0;
+            font-size: 13px;
+            resize: none;
+            box-sizing: border-box;
+            background: transparent;
+            overflow-wrap: break-word;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* 댓글 작성창의 등록 버튼 부분 CSS */
+        #comment-writebox-bottom {
+            padding: 3px 10px 10px 10px;
+            min-height: 45px; /* 수정 */
+        }
+
+        /* 댓글 작성창의 등록 버튼 */
+        #btn-write-comment {
+            color: #009f47;
+            background-color: #e0f8eb;
+            float: right;
+        }
+
+
+        #reply-writebox-bottom, #comment-modifybox-bottom {
+            padding: 3px 10px 10px 10px;
+            min-height: 45px;
+        }
+
+        /* 대댓글 등록 버튼 관련 CSS */
+        #btn-write-reply, #btn-modify-comment {
+            color: #009f47;
+            background-color: #e0f8eb;
+            float: right;
+        }
+
+        /* 대댓글 취소 버튼 관련 CSS */
+        #btn-cancel-reply, #btn-cancel-comment {
+            background-color: #eff0f2;
+            float: left;
+        }
+
+        .comment-area.child-comment {
+            margin-left: 20px; /* 자식 댓글에 대해 왼쪽 들여쓰기 */
+            padding-top: 8px;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragement/fragmentHeader :: header}"></div>
 <div class="container">
-    <h2 class="writing-header">게시판 글</h2>
     <form id="form" class="frm" th:action="@{/board/delete(page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
+        <div class="form-header">
+            <h2 class="writing-header">게시판 글</h2>
+            <div class="form-header-btn">
+                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
+                <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
+                <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
+            </div>
+        </div>
         <input type="hidden" th:field="*{bno}">
-
         <input type="text" th:field="*{title}" placeholder="제목을 입력해 주세요." readonly><br>
         <textarea rows="20" th:field="*{content}" placeholder="내용을 입력해 주세요." readonly></textarea><br>
-
-        <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
-        <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
-        <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
     </form>
+    <div id="commentList">
+        <ul>
+            <li th:each="comment : ${comments}" th:if="${comment.pcno == null}" th:attr="data-cno=${comment.cno}">
+                <div class="comment-area">
+                    <div class="commenter" th:text="${comment.userId}">테스터</div>
+                    <div class="comment-content" th:text="${comment.content}">댓글</div>
+                    <div class="comment-bottom">
+                        <span class="up_date" th:text="${{comment.registerTime}}">2022.01.01 23:59:59</span>
+                        <a th:href="|javascript:addReply(${bno}, ${comment.cno})|"
+                           class="btn-write"
+                           th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">답글쓰기</a>
+                        <a th:if="${comment.userId == session.loginMember?.id}"
+                           th:href="|javascript:modifyComment(${bno}, ${comment.cno}, '${comment.content}')|"
+                           class="btn-modify"
+                           th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">수정</a>
+                        <a th:if="${comment.userId == session.loginMember?.id}"
+                           th:href="|javascript:deleteComment(${bno}, ${comment.cno})|"
+                           class="btn-delete"
+                           th:attr="data-bno=${bno} ,data-cno=${comment.cno}, data-pcno=${comment.pcno}">삭제</a>
+                    </div>
+                </div>
+                <div th:each="reply : ${replies}" th:if="${reply.pcno == comment.cno}" th:attr="data-cno=${reply.cno}">
+                    <div class="comment-area child-comment">
+                        <div class="commenter" th:text="${reply.userId}">테스터</div>
+                        <div class="comment-content" th:text="${reply.content}">댓글</div>
+                        <div class="comment-bottom">
+                            <span class="up_date" th:text="${{reply.registerTime}}">2022.01.01 23:59:59</span>
+                            <a th:if="${reply.userId == session.loginMember?.id}"
+                               th:href="|javascript:modifyComment(${bno}, ${reply.cno}, '${reply.content}')|"
+                               class="btn-modify"
+                               th:attr="data-cno=${reply.cno}, data-pcno=${reply.pcno}">수정</a>
+                            <a th:if="${reply.userId == session.loginMember?.id}"
+                               th:href="|javascript:deleteComment(${bno}, ${reply.cno})|"
+                               class="btn-delete"
+                               th:attr="data-bno=${bno} ,data-cno=${reply.cno}, data-pcno=${reply.pcno}">삭제</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <form id="comment" class="comment" th:action="@{/board/{bno}/comment(bno=${post.bno})}" th:object="${comment}" method="post">
+        <!-- 댓글 작성 폼 -->
+        <div id="comment-writebox">
+            <div class="commenter commenter-writebox" th:text="${loginMember?.id eq null ? '게스트' : loginMember.id}">사용자</div>
+            <div class="comment-writebox-content">
+                            <textarea name="" cols="30" rows="3" th:field="*{content}" placeholder="댓글을 남겨보세요"></textarea>
+            </div>
+            <div id="comment-writebox-bottom">
+                <div class="register-box">
+                    <button class="btn" id="btn-write-comment">등록</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- 답글 작성 폼 -->
+<!--    <form id="reply" class="reply" th:action="@{/board/{bno}/comment(bno=${post.bno}, pcno=${comment.cno})}" th:object="${comment}" method="post">-->
+<!--        <div id="reply-writebox">-->
+<!--            <div class="commenter commenter-writebox">게스트</div>-->
+<!--            <div class="reply-writebox-content">-->
+<!--                        <textarea name="" cols="30" rows="3" placeholder="댓글을 남겨보세요"></textarea>-->
+<!--            </div>-->
+<!--            <div id="reply-writebox-bottom">-->
+<!--                <div class="register-box">-->
+<!--                    <button class="btn" id="btn-write-reply">등록</button>-->
+<!--                    <a href="#" class="btn" id="btn-cancel-reply">취소</a>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
+
+    <script th:inline="javascript">
+        function deleteComment(bno, cno) {
+            let pageMoveForm = document.createElement('form');
+            pageMoveForm.setAttribute('method', 'post');
+            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + cno + '/delete');
+            document.body.appendChild(pageMoveForm);
+            pageMoveForm.submit();
+        }
+
+        function addReply(bno, pcno) {
+            $("#comment-modifybox").css("display", "none");
+            $("#comment-writebox").css("display", "none");
+
+            // 기존에 생성된 수정 폼이 있으면 삭제하기
+            const existingReplyForm = document.getElementById("addReplyForm");
+            if (existingReplyForm) {
+                existingReplyForm.remove(); // 기존 수정 폼 삭제
+            }
+
+            let pageMoveForm = document.createElement('form');
+            pageMoveForm.setAttribute('method', 'post');
+            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + pcno + '/reply');
+            pageMoveForm.id = 'addReplyForm';
+
+            // 1. 최상위 div 생성
+            const replyWriteBox = document.createElement('div');
+            replyWriteBox.id = 'reply-writebox';
+            pageMoveForm.appendChild(replyWriteBox);
+
+            // 2. commenter div 생성
+            const commenterDiv = document.createElement('div');
+            commenterDiv.className = 'commenter commenter-writebox';
+            commenterDiv.textContent = [[${loginMember?.id eq null ? '게스트' : loginMember.id}]]; // 텍스트 설정
+            replyWriteBox.appendChild(commenterDiv);
+
+            // 3. comment-writebox-content div 생성
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'reply-writebox-content';
+
+            const textarea = document.createElement('textarea');
+            textarea.name = 'replyContent';
+            textarea.cols = 30;
+            textarea.rows = 3;
+            textarea.placeholder = '댓글을 남겨보세요';
+            contentDiv.appendChild(textarea);
+            replyWriteBox.appendChild(contentDiv);
+
+            // 4. comment-writebox-bottom div 생성
+            const bottomDiv = document.createElement('div');
+            bottomDiv.id = 'reply-writebox-bottom';
+
+            // 5. register-box div 생성
+            const registerBox = document.createElement('div');
+            registerBox.className = 'register-box';
+
+            // 수정 버튼 생성
+            const registerButton = document.createElement('button');
+            registerButton.className = 'btn';
+            registerButton.id = 'btn-write-reply';
+            registerButton.textContent = '등록';
+            registerBox.appendChild(registerButton);
+
+            // 취소 링크 생성
+            const cancelLink = document.createElement('a');
+            cancelLink.href = '#';
+            cancelLink.className = 'btn';
+            cancelLink.id = 'btn-cancel-reply';
+            cancelLink.textContent = '취소';
+            cancelLink.onclick = (event) => {
+                event.preventDefault(); // 링크 기본 동작 방지
+                replyWriteBox.remove(); // 작성 박스 삭제
+                $("#comment-writebox").css("display", "");
+            };
+
+            registerBox.appendChild(cancelLink);
+            bottomDiv.appendChild(registerBox);
+            replyWriteBox.appendChild(bottomDiv);
+
+            document.getElementById('commentList').insertAdjacentElement('afterend', pageMoveForm);
+
+            registerButton.onclick = () => {
+
+                const form = document.getElementById('addReplyForm');
+                if (!form) {
+                    console.error("Form not found!");
+                    return;
+                }
+                const textarea = form.querySelector('textarea');
+                if (!textarea.value.trim()) {
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
+                form.submit(); // 폼 제출
+            };
+        }
+
+        function modifyComment(bno, cno, comment) {
+            $("#comment-writebox").css("display", "none");
+            $("#reply-writebox").css("display", "none");
+
+            // 기존에 생성된 수정 폼이 있으면 삭제하기
+            const existingEditForm = document.getElementById("modifyCommentForm");
+            if (existingEditForm) {
+                existingEditForm.remove(); // 기존 수정 폼 삭제
+            }
+
+            let pageMoveForm = document.createElement('form');
+            pageMoveForm.setAttribute('method', 'post');
+            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + cno + '/modify');
+            pageMoveForm.id = 'modifyCommentForm';
+
+            // 1. 최상위 div 생성
+            const commentModifyBox = document.createElement('div');
+            commentModifyBox.id = 'comment-modifybox';
+            pageMoveForm.appendChild(commentModifyBox);
+
+            // 2. commenter div 생성
+            const commenterDiv = document.createElement('div');
+            commenterDiv.className = 'commenter commenter-writebox';
+            commenterDiv.textContent = [[${loginMember?.id eq null ? '게스트' : loginMember.id}]]; // 텍스트 설정
+            commentModifyBox.appendChild(commenterDiv);
+
+            // 3. comment-writebox-content div 생성
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'comment-modifybox-content';
+
+            const textarea = document.createElement('textarea');
+            textarea.name = 'modifyContent';
+            textarea.cols = 30;
+            textarea.rows = 3;
+            textarea.placeholder = '댓글을 남겨보세요';
+            textarea.value = `${comment}`;
+            contentDiv.appendChild(textarea);
+            commentModifyBox.appendChild(contentDiv);
+
+            // 4. comment-writebox-bottom div 생성
+            const bottomDiv = document.createElement('div');
+            bottomDiv.id = 'comment-modifybox-bottom';
+
+            // 5. register-box div 생성
+            const registerBox = document.createElement('div');
+            registerBox.className = 'register-box';
+
+            // 수정 버튼 생성
+            const registerButton = document.createElement('button');
+            registerButton.className = 'btn';
+            registerButton.id = 'btn-modify-comment';
+            registerButton.textContent = '수정';
+            registerBox.appendChild(registerButton);
+
+            // 취소 링크 생성
+            const cancelLink = document.createElement('a');
+            cancelLink.href = '#';
+            cancelLink.className = 'btn';
+            cancelLink.id = 'btn-cancel-comment';
+            cancelLink.textContent = '취소';
+            cancelLink.onclick = (event) => {
+                event.preventDefault(); // 링크 기본 동작 방지
+                commentModifyBox.remove(); // 작성 박스 삭제
+                $("#comment-writebox").css("display", "");
+            };
+            registerBox.appendChild(cancelLink);
+
+            bottomDiv.appendChild(registerBox);
+            commentModifyBox.appendChild(bottomDiv);
+
+            document.getElementById('commentList').insertAdjacentElement('afterend', pageMoveForm);
+
+            registerButton.onclick = () => {
+
+                const form = document.getElementById('modifyCommentForm');
+                if (!form) {
+                    console.error("Form not found!");
+                    return;
+                }
+                const textarea = form.querySelector('textarea');
+                if (!textarea.value.trim()) {
+                    alert('댓글 내용을 입력해주세요.');
+                    return;
+                }
+                form.submit(); // 폼 제출
+            };
+        }
+
+        // $(document).ready(function () {
+        //     // 답글 버튼을 클릭하면 댓글 작성 폼으로 전환
+        //     $("a.btn-write").click(function (e) {
+        //         e.preventDefault();
+        //         let target = $(e.target);
+        //         let cno = target.data("cno");
+        //
+        //         // 댓글 작성 폼을 답글 작성 폼으로 변경
+        //         $("#comment-writebox").css("display", "none");
+        //         $("#reply-writebox").css("display", "block");
+        //         $("#reply-writebox textarea").val(""); // 텍스트박스 초기화
+        //
+        //         $("#reply-writebox").data("parent-cno", cno);
+        //     });
+        //
+        //     // 답글 취소 버튼 클릭 시 입력 폼 숨기기
+        //     $("#btn-cancel-reply").click(function (e) {
+        //         e.preventDefault();
+        //         $("#comment-writebox").css("display", "block");
+        //         $("#reply-writebox").css("display", "none");
+        //     });
+        //
+        //     // 수정 버튼을 클릭하면 해당 댓글에서 수정 가능하게
+        //     $("a.btn-modify").click(function (e) {
+        //         e.preventDefault();
+        //         let target = $(e.target);
+        //         let cno = target.data("cno");
+        //         let commentContentDiv = $("li[data-cno=" + cno + "] .comment-content");
+        //
+        //         // 이미 수정 중인 상태인지 확인
+        //         if (commentContentDiv.find("textarea").length === 0) {
+        //             let currentText = commentContentDiv.text();
+        //
+        //             // 텍스트를 textarea로 변경
+        //             commentContentDiv.html(
+        //                 '<textarea rows="3">' + currentText + "</textarea>"
+        //             );
+        //             target.text("저장");
+        //
+        //             // 저장 버튼으로 변경 후 클릭 시 수정 완료 처리
+        //             target.off("click").on("click", function () {
+        //                 let updatedComment = commentContentDiv.find("textarea").val();
+        //
+        //                 // 수정된 내용을 서버에 전달하는 로직을 추가하세요.
+        //                 commentContentDiv.html(updatedComment); // 수정된 내용 반영
+        //
+        //                 // 저장 버튼을 다시 수정 버튼으로 변경
+        //                 target.text("수정");
+        //                 target.off("click").on("click", arguments.callee); // 원래 수정 로직으로 복귀
+        //             });
+        //         }
+        //     });
+
+            // 답글 저장 버튼을 클릭하면 답글을 부모 댓글 아래에 추가하고 들여쓰기 적용
+            // $("#btn-write-reply").click(function (e) {
+            //     e.preventDefault();
+            //
+            //     let replyContent = $("#reply-writebox textarea").val(); // 입력된 답글 내용
+            //     let parentCno = $("#reply-writebox").data("parent-cno"); // 부모 댓글의 cno
+            //
+            //     if (replyContent.trim() !== "") {
+            //         // 새로운 답글 요소 생성
+            //         let newReply = `
+            //                     <li class="comment-item reply-item" data-cno="new" data-pcno="${parentCno}" style="padding-left: 30px;">
+            //                         <span class="comment-img">
+            //                             <i class="fa fa-user-circle" aria-hidden="true"></i>
+            //                         </span>
+            //                         <div class="comment-area">
+            //                             <div class="commenter">사용자</div>
+            //                             <div class="comment-content">${replyContent}</div>
+            //                             <div class="comment-bottom">
+            //                                 <span class="up_date">${new Date()
+            //                                     .toISOString()
+            //                                     .slice(0, 19)
+            //                                     .replace("T", " ")}
+            //                                 </span>
+            //                                 <a href="#" class="btn-modify" data-cno="new" data-pcno="${parentCno}">수정</a>
+            //                                 <a href="#" class="btn-delete" data-cno="new" data-pcno="${parentCno}">삭제</a>
+            //                             </div>
+            //                         </div>
+            //                     </li>`;
+            //
+            //         // 부모 댓글 아래에 답글 추가
+            //         $("li[data-cno=" + parentCno + "]").append(newReply);
+            //
+            //         $("#comment-writebox").css("display", "block");
+            //         // 답글 작성 폼 숨기기
+            //         $("#reply-writebox").css("display", "none");
+            //     }
+            // });
+
+            // 삭제 버튼 클릭 시 이벤트 (구현 필요)
+            $("a.btn-delete").click(function (e) {
+                alert("삭제되었습니다.");
+            });
+
+
+        // });
+    </script>
+
 </div>
 </body>
 </html>

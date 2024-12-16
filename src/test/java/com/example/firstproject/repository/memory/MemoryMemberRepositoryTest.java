@@ -1,4 +1,4 @@
-package com.example.firstproject;
+package com.example.firstproject.repository.memory;
 
 import com.example.firstproject.domain.Member;
 import com.example.firstproject.repository.MemberRepository;

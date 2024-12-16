@@ -22,28 +22,28 @@ public class BoardService {
     /**
      * 검색 조건에 따라서 얻을 수 있는 게시글 리스트를 반환하는 메서드
      */
-    public List<Post> getPostsBySearchOption(SearchCondition searchCondition) {
-        String option = searchCondition.getOption();
-        String keyword = searchCondition.getKeyword();
-
-        if(option.equals("C")) {
-            return postRepository.findByContent(keyword);
-        }
-        else if(option.equals("T")) {
-            return postRepository.findByTitle(keyword);
-        }
-        else if(option.equals("W")) {
-            return postRepository.findByWriter(keyword);
-        }
-        else
-            return postRepository.findAll();
-    }
+//    public List<Post> getPostsBySearchOption(SearchCondition searchCondition) {
+//        String option = searchCondition.getOption();
+//        String keyword = searchCondition.getKeyword();
+//
+//        if(option.equals("C")) {
+//            return postRepository.findByContent(keyword);
+//        }
+//        else if(option.equals("T")) {
+//            return postRepository.findByTitle(keyword);
+//        }
+//        else if(option.equals("W")) {
+//            return postRepository.findByWriter(keyword);
+//        }
+//        else
+//            return postRepository.findAll();
+//    }
 
     /**
      * 게시판 페이징 처리를 위해서 PageHandler를 생성해서 반환하는 메서드
      */
-    public PageHandler getPageHandler(List<Post> findPost, Integer page, Integer pageSize) {
-        return new PageHandler(findPost.size(), page, pageSize);
+    public PageHandler getPageHandler(Integer page, Integer pageSize) {
+        return new PageHandler(postRepository.getCount(), page, pageSize);
     }
 
     /**
@@ -62,8 +62,9 @@ public class BoardService {
     /**
      * 검색 조건으로 얻은 게시글 목록과 페이지 정보를 이용해서 페이징 처리된, 즉 해당 페이지에 존재하는 게시글 리스트를 반환하는 메서드
      */
-    public List<Post> getPostsByPage(Map<String, Integer> pageInfo, List<Post> findPost) {
-        return postRepository.selectPage(pageInfo, findPost);
+//    public List<Post> getPostsByPage(Map<String, Integer> pageInfo, List<Post> findPost) {
+    public List<Post> getPostsByPage(Map<String, Integer> pageInfo, SearchCondition sc) {
+        return postRepository.selectPage(pageInfo, sc);
     }
 
     /**
@@ -85,7 +86,10 @@ public class BoardService {
      * 게시글의 조회수를 증가시키는 메서드
      */
     public void increaseViewCnt(Post post) {
+        log.info("post={}", post);
         post.increaseViewCnt();
+        log.info("cnt={}", post.getViewCnt());
+        postRepository.updateViewCnt(post);
     }
 
     /**

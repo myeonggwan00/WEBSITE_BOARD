@@ -42,9 +42,8 @@ public class BoardController {
      */
     @GetMapping("/board")
     public String boardList(Model model, @RequestParam(defaultValue = "1") Integer page,  @RequestParam(defaultValue = "10") Integer pageSize, SearchCondition sc) {
-//        List<Post> findPost = boardService.getPostsBySearchOption(sc);
         Map<String, Integer> map = boardService.getPageInfo(page, pageSize);
-//        List<Post> posts = boardService.getPostsByPage(map, findPost);
+
         List<Post> posts = boardService.getPostsByPage(map, sc);
         PageHandler pageHandler = boardService.getPageHandler(page, pageSize);
 
@@ -100,9 +99,6 @@ public class BoardController {
 
         List<Comment> comments = commentService.getCommentsByPostBno(bno);
         List<Comment> replies = commentService.getReplies();
-//        log.info("comment={}", comments);
-//        log.info("loginMember={}", loginMember);
-//        log.info("READ post={}", selectedPost);
 
         model.addAttribute("post", selectedPost);
         model.addAttribute("comments", comments);

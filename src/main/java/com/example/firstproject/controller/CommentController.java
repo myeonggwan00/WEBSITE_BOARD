@@ -25,8 +25,6 @@ public class CommentController {
     public String comment(@PathVariable Long bno, Comment comment, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         Post selectedPost = boardService.getPostInfo(bno);
 
-//        log.info("comment={}", comment);
-
         Comment savedComment = commentService.saveComment(loginMember, bno, comment);
         List<Comment> comments = commentService.getCommentsByPostBno(bno);
 

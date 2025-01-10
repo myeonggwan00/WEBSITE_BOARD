@@ -21,7 +21,7 @@ public class CommentController {
     private final BoardService boardService;
     private final CommentService commentService;
 
-    @PostMapping("/board/{bno}/comment")
+    @PostMapping("/posts/{bno}/comment")
     public String comment(@PathVariable Long bno, Comment comment, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         Post selectedPost = boardService.getPostInfo(bno);
 
@@ -34,32 +34,32 @@ public class CommentController {
         model.addAttribute("savedComment", savedComment);
         model.addAttribute("comments", comments);
 
-        return "redirect:/board/" + bno;
+        return "redirect:/posts/" + bno;
     }
 
-    @PostMapping("/board/{bno}/comment/{cno}/delete")
+    @PostMapping("/posts/{bno}/comment/{cno}/delete")
     public String deleteComment(@PathVariable Long bno, @PathVariable Long cno) {
         commentService.deleteCommentByCno(cno);
 
-        return "redirect:/board/" + bno;
+        return "redirect:/posts/" + bno;
     }
 
-    @PostMapping("/board/{bno}/comment/{cno}/modify")
+    @PostMapping("/posts/{bno}/comment/{cno}/modify")
     public String modifyComment(@PathVariable Long bno, @PathVariable Long cno, @RequestParam String modifyContent, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         log.info("edit cno={}, comment={}", cno, modifyContent);
 
         commentService.modifyComment(cno, modifyContent);
 
-        return "redirect:/board/" + bno;
+        return "redirect:/posts/" + bno;
     }
 
-    @PostMapping("/board/{bno}/comment/{pcno}/reply")
+    @PostMapping("/posts/{bno}/comment/{pcno}/reply")
     public String addReply(@PathVariable Long bno, @PathVariable Long pcno, @RequestParam String replyContent, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         log.info("loginMember={}", loginMember);
         log.info("reply pcno={}, comment={}", pcno, replyContent);
 
         commentService.saveReply(loginMember, bno, pcno, replyContent);
 
-        return "redirect:/board/" + bno;
+        return "redirect:/posts/" + bno;
     }
 }

@@ -148,11 +148,11 @@
 <body>
 <div th:replace="~{fragement/fragmentHeader :: header}"></div>
 <div class="container">
-    <form id="form" class="frm" th:action="@{/board/delete(page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
+    <form id="form" class="frm" th:action="@{/posts/{bno}/delete(bno=${post.getBno()}, page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
         <div class="form-header">
             <h2 class="writing-header">게시판 글</h2>
             <div class="form-header-btn">
-                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/board/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
+                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/posts/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
                 <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
                 <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
             </div>
@@ -202,7 +202,7 @@
             </li>
         </ul>
     </div>
-    <form id="comment" class="comment" th:action="@{/board/{bno}/comment(bno=${post.bno})}" th:object="${comment}" method="post">
+    <form id="comment" class="comment" th:action="@{/posts/{bno}/comment(bno=${post.bno})}" th:object="${comment}" method="post">
         <!-- 댓글 작성 폼 -->
         <div id="comment-writebox">
             <div class="commenter commenter-writebox" th:text="${loginMember?.id eq null ? '게스트' : loginMember.id}">사용자</div>
@@ -216,28 +216,11 @@
             </div>
         </div>
     </form>
-
-    <!-- 답글 작성 폼 -->
-<!--    <form id="reply" class="reply" th:action="@{/board/{bno}/comment(bno=${post.bno}, pcno=${comment.cno})}" th:object="${comment}" method="post">-->
-<!--        <div id="reply-writebox">-->
-<!--            <div class="commenter commenter-writebox">게스트</div>-->
-<!--            <div class="reply-writebox-content">-->
-<!--                        <textarea name="" cols="30" rows="3" placeholder="댓글을 남겨보세요"></textarea>-->
-<!--            </div>-->
-<!--            <div id="reply-writebox-bottom">-->
-<!--                <div class="register-box">-->
-<!--                    <button class="btn" id="btn-write-reply">등록</button>-->
-<!--                    <a href="#" class="btn" id="btn-cancel-reply">취소</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </form>-->
-
     <script th:inline="javascript">
         function deleteComment(bno, cno) {
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + cno + '/delete');
+            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + cno + '/delete');
             document.body.appendChild(pageMoveForm);
             pageMoveForm.submit();
         }
@@ -254,7 +237,7 @@
 
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + pcno + '/reply');
+            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + pcno + '/reply');
             pageMoveForm.id = 'addReplyForm';
 
             // 1. 최상위 div 생성
@@ -341,7 +324,7 @@
 
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/board/' + bno + '/comment/' + cno + '/modify');
+            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + cno + '/modify');
             pageMoveForm.id = 'modifyCommentForm';
 
             // 1. 최상위 div 생성
@@ -417,106 +400,11 @@
             };
         }
 
-        // $(document).ready(function () {
-        //     // 답글 버튼을 클릭하면 댓글 작성 폼으로 전환
-        //     $("a.btn-write").click(function (e) {
-        //         e.preventDefault();
-        //         let target = $(e.target);
-        //         let cno = target.data("cno");
-        //
-        //         // 댓글 작성 폼을 답글 작성 폼으로 변경
-        //         $("#comment-writebox").css("display", "none");
-        //         $("#reply-writebox").css("display", "block");
-        //         $("#reply-writebox textarea").val(""); // 텍스트박스 초기화
-        //
-        //         $("#reply-writebox").data("parent-cno", cno);
-        //     });
-        //
-        //     // 답글 취소 버튼 클릭 시 입력 폼 숨기기
-        //     $("#btn-cancel-reply").click(function (e) {
-        //         e.preventDefault();
-        //         $("#comment-writebox").css("display", "block");
-        //         $("#reply-writebox").css("display", "none");
-        //     });
-        //
-        //     // 수정 버튼을 클릭하면 해당 댓글에서 수정 가능하게
-        //     $("a.btn-modify").click(function (e) {
-        //         e.preventDefault();
-        //         let target = $(e.target);
-        //         let cno = target.data("cno");
-        //         let commentContentDiv = $("li[data-cno=" + cno + "] .comment-content");
-        //
-        //         // 이미 수정 중인 상태인지 확인
-        //         if (commentContentDiv.find("textarea").length === 0) {
-        //             let currentText = commentContentDiv.text();
-        //
-        //             // 텍스트를 textarea로 변경
-        //             commentContentDiv.html(
-        //                 '<textarea rows="3">' + currentText + "</textarea>"
-        //             );
-        //             target.text("저장");
-        //
-        //             // 저장 버튼으로 변경 후 클릭 시 수정 완료 처리
-        //             target.off("click").on("click", function () {
-        //                 let updatedComment = commentContentDiv.find("textarea").val();
-        //
-        //                 // 수정된 내용을 서버에 전달하는 로직을 추가하세요.
-        //                 commentContentDiv.html(updatedComment); // 수정된 내용 반영
-        //
-        //                 // 저장 버튼을 다시 수정 버튼으로 변경
-        //                 target.text("수정");
-        //                 target.off("click").on("click", arguments.callee); // 원래 수정 로직으로 복귀
-        //             });
-        //         }
-        //     });
-
-            // 답글 저장 버튼을 클릭하면 답글을 부모 댓글 아래에 추가하고 들여쓰기 적용
-            // $("#btn-write-reply").click(function (e) {
-            //     e.preventDefault();
-            //
-            //     let replyContent = $("#reply-writebox textarea").val(); // 입력된 답글 내용
-            //     let parentCno = $("#reply-writebox").data("parent-cno"); // 부모 댓글의 cno
-            //
-            //     if (replyContent.trim() !== "") {
-            //         // 새로운 답글 요소 생성
-            //         let newReply = `
-            //                     <li class="comment-item reply-item" data-cno="new" data-pcno="${parentCno}" style="padding-left: 30px;">
-            //                         <span class="comment-img">
-            //                             <i class="fa fa-user-circle" aria-hidden="true"></i>
-            //                         </span>
-            //                         <div class="comment-area">
-            //                             <div class="commenter">사용자</div>
-            //                             <div class="comment-content">${replyContent}</div>
-            //                             <div class="comment-bottom">
-            //                                 <span class="up_date">${new Date()
-            //                                     .toISOString()
-            //                                     .slice(0, 19)
-            //                                     .replace("T", " ")}
-            //                                 </span>
-            //                                 <a href="#" class="btn-modify" data-cno="new" data-pcno="${parentCno}">수정</a>
-            //                                 <a href="#" class="btn-delete" data-cno="new" data-pcno="${parentCno}">삭제</a>
-            //                             </div>
-            //                         </div>
-            //                     </li>`;
-            //
-            //         // 부모 댓글 아래에 답글 추가
-            //         $("li[data-cno=" + parentCno + "]").append(newReply);
-            //
-            //         $("#comment-writebox").css("display", "block");
-            //         // 답글 작성 폼 숨기기
-            //         $("#reply-writebox").css("display", "none");
-            //     }
-            // });
-
             // 삭제 버튼 클릭 시 이벤트 (구현 필요)
-            $("a.btn-delete").click(function (e) {
-                alert("삭제되었습니다.");
-            });
-
-
-        // });
+        $("a.btn-delete").click(function (e) {
+            alert("삭제되었습니다.");
+        });
     </script>
-
 </div>
 </body>
 </html>

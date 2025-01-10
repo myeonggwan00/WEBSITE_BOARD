@@ -43,7 +43,6 @@ public class BoardController {
     @GetMapping("/board")
     public String boardList(Model model, @RequestParam(defaultValue = "1") Integer page,  @RequestParam(defaultValue = "10") Integer pageSize, SearchCondition sc) {
         Map<String, Integer> map = boardService.getPageInfo(page, pageSize);
-
         List<Post> posts = boardService.getPostsByPage(map, sc);
         PageHandler pageHandler = boardService.getPageHandler(page, pageSize);
 
@@ -59,7 +58,7 @@ public class BoardController {
      *
      * 회원이 작성한 게시글 정보를 처리하기 위해서 비어있는 게시글 객체를 저장소(Model)에 저장해서 폼으로 넘겨준다.
      */
-    @GetMapping("/board/write")
+    @GetMapping("/posts/new")
     public String board(Model model) {
         model.addAttribute("post", new Post());
 
@@ -73,7 +72,7 @@ public class BoardController {
      * 2. 로그인되어 있는 회원 정보를 알아내기 위해서 세션에 저장되어 있는 정보를 얻어오기 (@SessionAttribute 사용)
      * 3. 로그인되어 있는 회원으로 게시판에 게시글 저장하기
      */
-    @PostMapping("/board/write")
+    @PostMapping("/posts/new")
     public String board(@Validated @ModelAttribute Post post, BindingResult bindingResult, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         if(bindingResult.hasErrors())
             return "addBoard";
@@ -89,7 +88,7 @@ public class BoardController {
     /**
      * 게시글을 선택했을 때 해당 게시글을 보여주는 메서드
      */
-    @GetMapping("/board/{bno}")
+    @GetMapping("/posts/{bno}")
     public String selectPost(@PathVariable Long bno, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         Comment comment = new Comment();
 
@@ -112,7 +111,7 @@ public class BoardController {
     /**
      * 게시글 수정 버튼을 눌렀을 때 게시글 수정 화면을 보여주는 메서드
      */
-    @GetMapping("/board/{bno}/edit")
+    @GetMapping("/posts/{bno}/edit")
     public String modifyBoard(@PathVariable Long bno, Model model) {
         Post post = boardService.getPostInfo(bno);
 
@@ -126,7 +125,7 @@ public class BoardController {
     /**
      * 게시글 수정 및 등록 작업을 하는 메서드
      */
-    @PostMapping("/board/{bno}/edit")
+    @PostMapping("/posts/{bno}/edit")
     public String modifyBoard(@PathVariable Long bno, Integer page, Integer pageSize, @Validated @ModelAttribute Post updatePost, BindingResult bindingResult) {
         if(bindingResult.hasErrors())
             return "editBoard";
@@ -141,7 +140,7 @@ public class BoardController {
     /**
      * 게시글 삭제 작업을 하는 메서드
      */
-    @PostMapping("/board/delete")
+    @PostMapping("/posts/{bno}/delete")
     public String deleteBoard(@ModelAttribute Post post, Integer page, Integer pageSize) {
         boardService.removePost(post);
 

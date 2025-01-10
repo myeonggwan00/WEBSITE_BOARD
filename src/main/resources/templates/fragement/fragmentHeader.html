@@ -7,7 +7,7 @@
             <li><a th:href="@{/}" th:text="#{homePage.home}">Home</a></li>
             <li><a th:href="@{/board?option=&page=1&pageSize=10}" th:text="#{homePage.board}">Board</a></li>
             <li><a th:href="${session.status} ? @{/logout} : @{/login}" th:text="${session.status} ? #{homePage.logout} : #{homePage.login}">login</a></li>
-            <li><a th:href="${session.isEmpty()} ? @{/register} : @{/account/delete}" th:text="${session.isEmpty()} ? #{homePage.register} : #{homePage.deleteAccount}">Sign in</a></li>
+            <li><a th:href="${session.isEmpty()} ? @{/members/new} : @{/members/delete}" th:text="${session.isEmpty()} ? #{homePage.register} : #{homePage.deleteAccount}">Sign in</a></li>
             <li><a href=""><i class="fas fa-search small"></i></a></li>
         </ul>
     </div>

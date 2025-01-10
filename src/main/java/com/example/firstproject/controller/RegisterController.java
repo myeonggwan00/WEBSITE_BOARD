@@ -26,7 +26,7 @@ public class RegisterController {
      *
      * 사용자가 회원가입할 때 입력한 정보를 처리하기 위해서 비어있는 회원 객체를 저장소(Model)에 저장해서 폼에 넘겨준다.
      */
-    @GetMapping("/register")
+    @GetMapping("/members/new")
     public String register(Model model) {
 
         model.addAttribute("member", new Member());
@@ -39,7 +39,7 @@ public class RegisterController {
      *
      * 1. 회원가입 화면에서 사용자가 입력한 정보를 얻기 (@ModelAttribute 사용)
      */
-    @PostMapping("/register")
+    @PostMapping("/members/register")
     public String register(@Validated @ModelAttribute Member member, BindingResult bindingResult) {
         if(bindingResult.hasErrors())
             return "registerForm";
@@ -51,7 +51,7 @@ public class RegisterController {
         return "home";
     }
 
-    @GetMapping("/account/delete")
+    @GetMapping("/members/delete")
     public String deleteAccount(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member member, HttpServletRequest request) {
         userManagementService.deleteMember(member);
         userManagementService.terminateSession(request);

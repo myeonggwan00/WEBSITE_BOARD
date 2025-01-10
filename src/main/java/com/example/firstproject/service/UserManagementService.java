@@ -24,7 +24,7 @@ public class UserManagementService {
      * 회원을 삭제하는 메서드, 즉 회원탈퇴 기능을 하는 메서드
      */
     public void deleteMember(Member member) {
-        memberRepository.deleteByNo(member.getNo());
+        memberRepository.deleteById(member.getId());
     }
 
     /**

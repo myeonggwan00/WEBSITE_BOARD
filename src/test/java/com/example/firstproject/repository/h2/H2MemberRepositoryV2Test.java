@@ -39,25 +39,25 @@ class H2MemberRepositoryV2Test {
         memberRepository.add(memberB);
 
         // 회원 아이디로 회원 조회(memberA 조회)
-        Optional<Member> addMember = memberRepository.findById(memberA.getId());
+        Optional<Member> addMember = memberRepository.findByLoginId(memberA.getLoginId());
 
         // 회원 번호로 회원 조회(memberA 조회)
-        Optional<Member> findMember = memberRepository.findByNo(addMember.get().getNo());
+        Optional<Member> findMember = memberRepository.findById(addMember.get().getId());
 
         assertThat(findMember).isEqualTo(addMember);
 
         // 회원 정보 변경
-        memberRepository.update(findMember.get().getNo(), new Member("updateId", "updatePwd", "memberA"));
+        memberRepository.update(findMember.get().getId(), new Member("updateId", "updatePwd", "memberA"));
 
-        Optional<Member> updateMember = memberRepository.findByNo(findMember.get().getNo());
+        Optional<Member> updateMember = memberRepository.findById(findMember.get().getId());
 
-        assertThat(updateMember.get().getId()).isEqualTo("updateId");
+        assertThat(updateMember.get().getLoginId()).isEqualTo("updateId");
 
         List<Member> memberList = memberRepository.findAll();
 
         assertThat(memberList.size()).isEqualTo(2);
 
-        memberRepository.deleteByNo(addMember.get().getNo());
+        memberRepository.deleteById(addMember.get().getId());
 
         memberList = memberRepository.findAll();
 

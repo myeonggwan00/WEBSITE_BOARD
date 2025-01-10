@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 @Slf4j
 public class H2MemberRepositoryV0 {
     public Member save(Member member) throws SQLException {
-        String sql = "insert into member(id, pwd, userName) values (?, ?, ?)";
+        String sql = "insert into member(id, password, username) values (?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -19,9 +19,9 @@ public class H2MemberRepositoryV0 {
             conn = DBConnectionUtils.getConnection();
             pstmt = conn.prepareStatement(sql);
 
-            pstmt.setString(1, member.getId());
-            pstmt.setString(2, member.getPwd());
-            pstmt.setString(3, member.getUserName());
+            pstmt.setLong(1, member.getId());
+            pstmt.setString(2, member.getPassword());
+            pstmt.setString(3, member.getUsername());
 
             pstmt.executeUpdate();
 
@@ -33,8 +33,8 @@ public class H2MemberRepositoryV0 {
         }
     }
 
-    public Member findByNo(Long no) throws SQLException{
-        String sql = "select * from member where no = ?";
+    public Member findByNo(Long id) throws SQLException{
+        String sql = "select * from member where id = ?";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -44,21 +44,21 @@ public class H2MemberRepositoryV0 {
             conn = DBConnectionUtils.getConnection();
             pstmt = conn.prepareStatement(sql);
 
-            pstmt.setLong(1, no);
+            pstmt.setLong(1, id);
 
             rs = pstmt.executeQuery();
 
             if(rs.next()) {
                 Member member = new Member();
 
-                member.setNo(rs.getLong("no"));
-                member.setId(rs.getString("id"));
-                member.setPwd(rs.getString("pwd"));
-                member.setUserName(rs.getString("userName"));
+                member.setId(rs.getLong("member_id"));
+                member.setLoginId(rs.getString("login_id"));
+                member.setPassword(rs.getString("password"));
+                member.setUsername(rs.getString("username"));
 
                 return member;
             } else {
-                throw new NoSuchElementException("member not found id = " + no);
+                throw new NoSuchElementException("member not found id = " + id);
             }
         } catch(SQLException e) {
             throw e;
@@ -85,10 +85,10 @@ public class H2MemberRepositoryV0 {
             if(rs.next()) {
                 Member member = new Member();
 
-                member.setNo(rs.getLong("no"));
-                member.setId(rs.getString("id"));
-                member.setPwd(rs.getString("pwd"));
-                member.setUserName(rs.getString("userName"));
+                member.setId(rs.getLong("member_id"));
+                member.setLoginId(rs.getString("login_id"));
+                member.setPassword(rs.getString("password"));
+                member.setUsername(rs.getString("username"));
 
                 return member;
             } else {
@@ -101,8 +101,8 @@ public class H2MemberRepositoryV0 {
         }
     }
 
-    public void update(Member updateMember, Long no) throws SQLException {
-        String sql = "update member set id = ?, pwd = ?, userName = ? where no = ?";
+    public void update(Member updateMember, Long id) throws SQLException {
+        String sql = "update member set login_id = ?, password = ?, username = ? where id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -110,10 +110,10 @@ public class H2MemberRepositoryV0 {
             conn = DBConnectionUtils.getConnection();
             pstmt = conn.prepareStatement(sql);
 
-            pstmt.setString(1, updateMember.getId());
-            pstmt.setString(2, updateMember.getPwd());
-            pstmt.setString(3, updateMember.getUserName());
-            pstmt.setLong(4, no);
+            pstmt.setString(1, updateMember.getLoginId());
+            pstmt.setString(2, updateMember.getPassword());
+            pstmt.setString(3, updateMember.getUsername());
+            pstmt.setLong(4, id);
 
             pstmt.executeUpdate();
         } catch(SQLException e) {

@@ -4,6 +4,7 @@ import com.example.firstproject.domain.Member;
 import com.example.firstproject.repository.h2.member.H2MemberRepositoryV1;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ class H2MemberRepositoryV1Test {
     H2MemberRepositoryV1 memberRepository = new H2MemberRepositoryV1();
 
     @Test
+    @Transactional
     void crud() {
         // 회원 등록
         Member memberA = new Member("h2", "1234", "memberA");
@@ -24,23 +26,23 @@ class H2MemberRepositoryV1Test {
         memberRepository.add(memberB);
 
         // 회원 아이디로 회원 조회(memberA 조회)
-        Optional<Member> addMember = memberRepository.findById(memberA.getId());
+        Optional<Member> addMember = memberRepository.findByLoginId(memberA.getLoginId());
         log.info("addMember={}", addMember);
 
         // 회원 번호로 회원 조회(memberA 조회)
-        Optional<Member> findMember = memberRepository.findByNo(addMember.get().getNo());
+        Optional<Member> findMember = memberRepository.findById(addMember.get().getId());
         log.info("findMember={}", findMember);
 
         assertThat(findMember).isEqualTo(addMember);
 
         // 회원 정보 변경
-        memberRepository.update(findMember.get().getNo(), new Member("updateId", "updatePwd", "memberA"));
+        memberRepository.update(findMember.get().getId(), new Member("updateId", "updatePwd", "memberA"));
 
-        Optional<Member> updateMember = memberRepository.findByNo(findMember.get().getNo());
+        Optional<Member> updateMember = memberRepository.findById(findMember.get().getId());
 
         log.info("updateMember={}", updateMember);
 
-        assertThat(updateMember.get().getId()).isEqualTo("updateId");
+        assertThat(updateMember.get().getLoginId()).isEqualTo("updateId");
 
         List<Member> memberList = memberRepository.findAll();
 
@@ -52,7 +54,7 @@ class H2MemberRepositoryV1Test {
 
         assertThat(memberList.size()).isEqualTo(2);
 
-        memberRepository.deleteByNo(addMember.get().getNo());
+        memberRepository.deleteById(addMember.get().getId());
 
         memberList = memberRepository.findAll();
 

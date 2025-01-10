@@ -17,7 +17,7 @@ public class CommentService {
 
     public Comment saveComment(Member loginMember, Long bno, Comment comment) {
         comment.setPostBno(bno);
-        comment.setUserId(loginMember.getId());
+        comment.setUserId(loginMember.getLoginId());
 
         return commentRepository.save(comment);
     }
@@ -42,7 +42,7 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setPcno(pcno);
         comment.setPostBno(bno);
-        comment.setUserId(loginMember.getId());
+        comment.setUserId(loginMember.getLoginId());
         comment.setContent(replyContent);
 
         return commentRepository.save(comment);

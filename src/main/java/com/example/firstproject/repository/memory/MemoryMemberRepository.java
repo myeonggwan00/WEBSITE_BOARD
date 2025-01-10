@@ -3,11 +3,9 @@ package com.example.firstproject.repository.memory;
 import com.example.firstproject.domain.Member;
 import com.example.firstproject.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-//@Repository
 @Slf4j
 public class MemoryMemberRepository implements MemberRepository {
     private static final Map<Long, Member> store = new HashMap<>();
@@ -15,30 +13,30 @@ public class MemoryMemberRepository implements MemberRepository {
 
     @Override
     public void add(Member member) {
-        member.setNo(++sequence);
-        store.put(member.getNo(), member);
+        member.setId(++sequence);
+        store.put(member.getId(), member);
     }
 
     @Override
-    public void update(Long no, Member updateMember) {
-        Member findMember = store.get(no);
+    public void update(Long id, Member updateMember) {
+        Member findMember = store.get(id);
 
-        findMember.setId(updateMember.getId());
-        findMember.setPwd(updateMember.getPwd());
-        findMember.setUserName(updateMember.getUserName());
+        findMember.setLoginId(updateMember.getLoginId());
+        findMember.setPassword(updateMember.getPassword());
+        findMember.setUsername(updateMember.getUsername());
     }
 
     @Override
-    public Optional<Member> findByNo(Long no) {
-        return Optional.ofNullable(store.get(no));
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Optional<Member> findById(String id) {
+    public Optional<Member> findByLoginId(String loginId) {
         List<Member> members = store.values().stream().toList();
 
         for (Member member : members) {
-            if(member.getId().equals(id)) {
+            if(member.getLoginId().equals(loginId)) {
                 return Optional.ofNullable(member);
             }
         }
@@ -53,8 +51,8 @@ public class MemoryMemberRepository implements MemberRepository {
     }
 
     @Override
-    public void deleteByNo(Long no) {
-        store.remove(no);
+    public void deleteById(Long id) {
+        store.remove(id);
     }
 
     @Override

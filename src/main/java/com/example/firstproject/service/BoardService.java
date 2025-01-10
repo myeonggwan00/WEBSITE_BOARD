@@ -71,7 +71,7 @@ public class BoardService {
      * 게시글을 저장하는 메서드
      */
     public void savePost(Member loginMember, Post post) {
-        post.setUserName(loginMember.getUserName());
+        post.setUserName(loginMember.getUsername());
         postRepository.save(post);
     }
 

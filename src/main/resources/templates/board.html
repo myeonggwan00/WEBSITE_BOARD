@@ -152,8 +152,8 @@
         <div class="form-header">
             <h2 class="writing-header">게시판 글</h2>
             <div class="form-header-btn">
-                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.userName}" th:onclick="|location.href='@{/posts/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
-                <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.userName}"><i class="fa fa-trash"></i> 삭제</button>
+                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.username}" th:onclick="|location.href='@{/posts/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
+                <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.username}"><i class="fa fa-trash"></i> 삭제</button>
                 <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
             </div>
         </div>
@@ -172,11 +172,11 @@
                         <a th:href="|javascript:addReply(${bno}, ${comment.cno})|"
                            class="btn-write"
                            th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">답글쓰기</a>
-                        <a th:if="${comment.userId == session.loginMember?.id}"
+                        <a th:if="${comment.userId == session.loginMember?.loginId}"
                            th:href="|javascript:modifyComment(${bno}, ${comment.cno}, '${comment.content}')|"
                            class="btn-modify"
                            th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">수정</a>
-                        <a th:if="${comment.userId == session.loginMember?.id}"
+                        <a th:if="${comment.userId == session.loginMember?.loginId}"
                            th:href="|javascript:deleteComment(${bno}, ${comment.cno})|"
                            class="btn-delete"
                            th:attr="data-bno=${bno} ,data-cno=${comment.cno}, data-pcno=${comment.pcno}">삭제</a>
@@ -188,11 +188,11 @@
                         <div class="comment-content" th:text="${reply.content}">댓글</div>
                         <div class="comment-bottom">
                             <span class="up_date" th:text="${{reply.registerTime}}">2022.01.01 23:59:59</span>
-                            <a th:if="${reply.userId == session.loginMember?.id}"
+                            <a th:if="${reply.userId == session.loginMember?.loginId}"
                                th:href="|javascript:modifyComment(${bno}, ${reply.cno}, '${reply.content}')|"
                                class="btn-modify"
                                th:attr="data-cno=${reply.cno}, data-pcno=${reply.pcno}">수정</a>
-                            <a th:if="${reply.userId == session.loginMember?.id}"
+                            <a th:if="${reply.userId == session.loginMember?.loginId}"
                                th:href="|javascript:deleteComment(${bno}, ${reply.cno})|"
                                class="btn-delete"
                                th:attr="data-bno=${bno} ,data-cno=${reply.cno}, data-pcno=${reply.pcno}">삭제</a>
@@ -205,7 +205,7 @@
     <form id="comment" class="comment" th:action="@{/posts/{bno}/comment(bno=${post.bno})}" th:object="${comment}" method="post">
         <!-- 댓글 작성 폼 -->
         <div id="comment-writebox">
-            <div class="commenter commenter-writebox" th:text="${loginMember?.id eq null ? '게스트' : loginMember.id}">사용자</div>
+            <div class="commenter commenter-writebox" th:text="${loginMember?.loginId eq null ? '게스트' : loginMember.loginId}">사용자</div>
             <div class="comment-writebox-content">
                             <textarea name="" cols="30" rows="3" th:field="*{content}" placeholder="댓글을 남겨보세요"></textarea>
             </div>
@@ -248,7 +248,7 @@
             // 2. commenter div 생성
             const commenterDiv = document.createElement('div');
             commenterDiv.className = 'commenter commenter-writebox';
-            commenterDiv.textContent = [[${loginMember?.id eq null ? '게스트' : loginMember.id}]]; // 텍스트 설정
+            commenterDiv.textContent = [[${loginMember?.loginId eq null ? '게스트' : loginMember.loginId}]]; // 텍스트 설정
             replyWriteBox.appendChild(commenterDiv);
 
             // 3. comment-writebox-content div 생성

@@ -1,22 +1,15 @@
 package com.example.firstproject.repository.h2.member;
 
 import com.example.firstproject.domain.Member;
-import com.example.firstproject.jdbc.connection.DBConnectionUtils;
 import com.example.firstproject.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -33,35 +26,22 @@ public class H2MemberRepositoryV3 implements MemberRepository {
 
     @Override
     public void add(Member member) {
-        String sql = "insert into member(id, pwd, userName) values (?, ?, ?)";
+        String sql = "insert into member(login_id, password, username) values (?, ?, ?)";
 
-        template.update(sql, member.getId(), member.getPwd(), member.getUserName());
+        template.update(sql, member.getLoginId(), member.getPassword(), member.getUsername());
     }
 
     @Override
-    public void update(Long no, Member updateMember) {
-        String sql = "update member set id = ?, pwd = ?, userName = ? where no = ?";
+    public void update(Long id, Member updateMember) {
+        String sql = "update member set login_id = ?, password = ?, username = ? where id = ?";
 
-        template.update(sql, updateMember.getId(), updateMember.getPwd(), updateMember.getUserName(), no);
+        template.update(sql, updateMember.getLoginId(), updateMember.getPassword(), updateMember.getUsername(), id);
     }
 
     @Override
-    public Optional<Member> findByNo(Long no) {
-        String sql = "select * from member where no = ?";
-
-        try {
-            Member member = template.queryForObject(sql, memberRowMapper(), no);
-
-            return Optional.of(member);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-
-    }
-
-    @Override
-    public Optional<Member> findById(String id) {
+    public Optional<Member> findById(Long id) {
         String sql = "select * from member where id = ?";
+
         try {
             Member member = template.queryForObject(sql, memberRowMapper(), id);
 
@@ -70,27 +50,37 @@ public class H2MemberRepositoryV3 implements MemberRepository {
             return Optional.empty();
         }
 
+    }
 
+    @Override
+    public Optional<Member> findByLoginId(String loginId) {
+        String sql = "select * from member where login_id = ?";
+        try {
+            Member member = template.queryForObject(sql, memberRowMapper(), loginId);
+
+            return Optional.of(member);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Member> findAll() {
         String sql = "select * from member";
 
-
         return template.query(sql, memberRowMapper());
     }
 
     @Override
-    public void deleteByNo(Long no) {
-        String sql = "delete from  member where no = ?";
+    public void deleteById(Long id) {
+        String sql = "delete from member where id = ?";
 
-        template.update(sql, no);
+        template.update(sql, id);
     }
 
     @Override
     public void deleteAll() {
-        String sql = "delete from  member";
+        String sql = "delete from member";
 
         template.update(sql);
     }
@@ -99,10 +89,10 @@ public class H2MemberRepositoryV3 implements MemberRepository {
         return (rs, rowNum) -> {
             Member member = new Member();
 
-            member.setNo(rs.getLong("no"));
-            member.setId(rs.getString("id"));
-            member.setPwd(rs.getString("pwd"));
-            member.setUserName(rs.getString("userName"));
+            member.setId(rs.getLong("id"));
+            member.setLoginId(rs.getString("login_id"));
+            member.setPassword(rs.getString("password"));
+            member.setUsername(rs.getString("username"));
 
             return member;
         };

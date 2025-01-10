@@ -5,19 +5,22 @@ import lombok.Data;
 
 @Data
 public class Member {
-    private Long no;
+    private Long id;
+
     @NotBlank
-    private String id;
+    private String loginId;
+
     @NotBlank
-    private String pwd;
+    private String password;
+
     @NotBlank
-    private String userName;
+    private String username;
 
     public Member() {}
 
-    public Member(String id, String pwd, String userName) {
-        this.id = id;
-        this.pwd = pwd;
-        this.userName = userName;
+    public Member(String loginId, String password, String username) {
+        this.loginId = loginId;
+        this.password = password;
+        this.username = username;
     }
 }

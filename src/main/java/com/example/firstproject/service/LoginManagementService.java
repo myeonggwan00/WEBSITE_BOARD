@@ -43,7 +43,7 @@ public class LoginManagementService {
     }
 
     public void processLoginFail(LoginMember loginMember, BindingResult bindingResult, Optional<Member> optionalFindMember) {
-        if(optionalFindMember.isEmpty() || !loginMember.getPwd().equals(optionalFindMember.get().getPwd())) {
+        if(optionalFindMember.isEmpty() || !loginMember.getPwd().equals(optionalFindMember.get().getPassword())) {
             log.info("LOGIN FAIL");
 
             bindingResult.reject("loginFail");
@@ -51,8 +51,8 @@ public class LoginManagementService {
     }
 
 
-    public Optional<Member> findLoginMemberById(String id) {
-        return memberRepository.findById(id);
+    public Optional<Member> findLoginMemberById(String loginId) {
+        return memberRepository.findByLoginId(loginId);
     }
 
     public void createSession(HttpServletRequest request, Optional<Member> optionalMember) {

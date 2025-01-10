@@ -30,7 +30,7 @@ MemoryMemberRepositoryTest {
 
         memberRepository.add(newMember);
 
-        Member findMember = memberRepository.findByNo(newMember.getNo()).get();
+        Member findMember = memberRepository.findById(newMember.getId()).get();
 
         assertThat(findMember).isEqualTo(newMember);
     }
@@ -43,11 +43,11 @@ MemoryMemberRepositoryTest {
 
         Member updateMember = new Member("update", "update123", "길동이");
 
-        memberRepository.update(newMember.getNo(), updateMember);
+        memberRepository.update(newMember.getId(), updateMember);
 
-        assertThat(newMember.getId()).isEqualTo("update");
-        assertThat(newMember.getPwd()).isEqualTo("update123");
-        assertThat(newMember.getUserName()).isEqualTo("길동이");
+        assertThat(newMember.getLoginId()).isEqualTo("update");
+        assertThat(newMember.getPassword()).isEqualTo("update123");
+        assertThat(newMember.getUsername()).isEqualTo("길동이");
     }
 
     @Test
@@ -57,7 +57,7 @@ MemoryMemberRepositoryTest {
         memberRepository.add(newMember);
 
 
-        Member findMember = memberRepository.findById(newMember.getId()).get();
+        Member findMember = memberRepository.findByLoginId(newMember.getLoginId()).get();
 
         log.info("findMember={}", findMember);
 
@@ -97,7 +97,7 @@ MemoryMemberRepositoryTest {
         memberRepository.add(newMember2);
         memberRepository.add(newMember3);
 
-        memberRepository.deleteByNo(newMember1.getNo());
+        memberRepository.deleteById(newMember1.getId());
 
         List<Member> result = memberRepository.findAll();
 

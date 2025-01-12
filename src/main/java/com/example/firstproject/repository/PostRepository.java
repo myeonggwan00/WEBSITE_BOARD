@@ -1,7 +1,7 @@
 package com.example.firstproject.repository;
 
-import com.example.firstproject.domain.Post;
-import com.example.firstproject.domain.SearchCondition;
+import com.example.firstproject.domain.jdbc.Post;
+import com.example.firstproject.domain.dto.SearchCondition;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ public interface PostRepository {
 
     void updateViewCnt(Post post);
 
-    Optional<Post> findByBno(Long bno);
+    Optional<Post> findById(Long id);
 
     List<Post> findAll(Integer offset, Integer limit);
 

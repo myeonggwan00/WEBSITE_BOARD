@@ -1,6 +1,6 @@
 package com.example.firstproject.repository;
 
-import com.example.firstproject.domain.Comment;
+import com.example.firstproject.domain.jdbc.Comment;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ public interface CommentRepository {
 
     void delete(Long cno);
 
-    List<Comment> findByPostBno(Long postBno);
+    List<Comment> findByPostId(Long postId);
 
     List<Comment> getReplies();
 
-    Comment findByCno(Long cno);
+    Comment findByCommentId(Long cno);
 }

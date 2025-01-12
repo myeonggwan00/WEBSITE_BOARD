@@ -1,6 +1,6 @@
 package com.example.firstproject.service;
 
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

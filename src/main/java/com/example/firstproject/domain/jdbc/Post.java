@@ -1,4 +1,4 @@
-package com.example.firstproject.domain;
+package com.example.firstproject.domain.jdbc;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,26 +10,35 @@ import java.time.LocalDateTime;
 
 @Data
 public class Post {
-    private Long bno;
+    private Long id;
+
+    private Long memberId;
+
     @NotBlank
     private String title;
+
     @NotEmpty
     private String content;
-    private String userName;
+
+    private String username;
 
     @DateTimeFormat(pattern = "yy-MM-dd HH:mm")
-    private LocalDateTime registerTime;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @NumberFormat(pattern = "###,###")
     private Long viewCnt = 0L;
 
+    private Long likeCnt = 0L;
+
     public Post() {
     }
 
-    public Post(String title, String content, String userName) {
+    public Post(String title, String content, String username) {
         this.title = title;
         this.content = content;
-        this.userName = userName;
+        this.username = username;
     }
 
     public void increaseViewCnt() {

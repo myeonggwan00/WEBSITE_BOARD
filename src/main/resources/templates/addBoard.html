@@ -14,7 +14,7 @@
 <div class="container">
     <h2 class="writing-header">게시판 글 쓰기</h2>
     <form id="form" class="frm" action="" th:object="${post}" method="post">
-        <input type="hidden" th:field="*{bno}">
+        <input type="hidden" th:field="*{id}">
 
         <div class="msg" th:if="${#fields.hasErrors('title')}">
             <i class="fa fa-exclamation-circle"></i><span th:errors="*{title}"></span>

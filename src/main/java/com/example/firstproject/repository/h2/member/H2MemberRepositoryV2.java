@@ -1,6 +1,6 @@
 package com.example.firstproject.repository.h2.member;
 
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.jdbc.connection.DBConnectionUtils;
 import com.example.firstproject.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;

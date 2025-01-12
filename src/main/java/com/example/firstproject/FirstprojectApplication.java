@@ -1,10 +1,7 @@
 package com.example.firstproject;
 
-import com.example.firstproject.domain.Member;
-import com.example.firstproject.domain.Post;
 import com.example.firstproject.repository.MemberRepository;
 import com.example.firstproject.repository.PostRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,7 +1,7 @@
 package com.example.firstproject.repository;
 
 
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Member;
 
 import java.util.List;
 import java.util.Optional;

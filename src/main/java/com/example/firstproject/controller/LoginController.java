@@ -1,14 +1,11 @@
 package com.example.firstproject.controller;
 
-import com.example.firstproject.SessionConst;
-import com.example.firstproject.domain.LoginMember;
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.dto.LoginMember;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.repository.MemberRepository;
 import com.example.firstproject.service.LoginManagementService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

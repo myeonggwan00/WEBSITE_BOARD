@@ -1,7 +1,12 @@
 package com.example.firstproject.controller;
 
 import com.example.firstproject.SessionConst;
-import com.example.firstproject.domain.*;
+import com.example.firstproject.domain.dto.PageHandler;
+import com.example.firstproject.domain.dto.SearchCondition;
+import com.example.firstproject.domain.dto.SearchOption;
+import com.example.firstproject.domain.jdbc.Comment;
+import com.example.firstproject.domain.jdbc.Member;
+import com.example.firstproject.domain.jdbc.Post;
 import com.example.firstproject.service.BoardService;
 import com.example.firstproject.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -88,15 +93,15 @@ public class BoardController {
     /**
      * 게시글을 선택했을 때 해당 게시글을 보여주는 메서드
      */
-    @GetMapping("/posts/{bno}")
-    public String selectPost(@PathVariable Long bno, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
+    @GetMapping("/posts/{id}")
+    public String selectPost(@PathVariable Long id, Model model, @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember) {
         Comment comment = new Comment();
 
-        Post selectedPost = boardService.getPostInfo(bno);
+        Post selectedPost = boardService.getPostInfo(id);
 
         boardService.increaseViewCnt(selectedPost);
 
-        List<Comment> comments = commentService.getCommentsByPostBno(bno);
+        List<Comment> comments = commentService.getCommentsByPostId(id);
         List<Comment> replies = commentService.getReplies();
 
         model.addAttribute("post", selectedPost);
@@ -111,9 +116,9 @@ public class BoardController {
     /**
      * 게시글 수정 버튼을 눌렀을 때 게시글 수정 화면을 보여주는 메서드
      */
-    @GetMapping("/posts/{bno}/edit")
-    public String modifyBoard(@PathVariable Long bno, Model model) {
-        Post post = boardService.getPostInfo(bno);
+    @GetMapping("/posts/{id}/edit")
+    public String modifyBoard(@PathVariable Long id, Model model) {
+        Post post = boardService.getPostInfo(id);
 
         log.info("MODIFY findPost={}", post);
 
@@ -125,25 +130,27 @@ public class BoardController {
     /**
      * 게시글 수정 및 등록 작업을 하는 메서드
      */
-    @PostMapping("/posts/{bno}/edit")
-    public String modifyBoard(@PathVariable Long bno, Integer page, Integer pageSize, @Validated @ModelAttribute Post updatePost, BindingResult bindingResult) {
+    @PostMapping("/posts/{id}/edit")
+    public String modifyBoard(@PathVariable Long id, Integer page, Integer pageSize, @Validated @ModelAttribute Post updatePost, BindingResult bindingResult) {
         if(bindingResult.hasErrors())
             return "editBoard";
 
-        boardService.modifyPost(bno, updatePost);
+        boardService.modifyPost(id, updatePost);
 
         log.info("MODIFY updatePost={}", updatePost);
 
-        return "redirect:/board?page=" + page + "&pageSize=" + pageSize;
+//        return "redirect:/board?page=" + page + "&pageSize=" + pageSize;
+        return "redirect:/posts/" + id + "?page=" + page + "&pageSize=" + pageSize;
     }
 
     /**
      * 게시글 삭제 작업을 하는 메서드
      */
-    @PostMapping("/posts/{bno}/delete")
+    @PostMapping("/posts/{id}/delete")
     public String deleteBoard(@ModelAttribute Post post, Integer page, Integer pageSize) {
+        Integer checkPage = boardService.checkPage(page);
         boardService.removePost(post);
 
-        return "redirect:/board?page=" + boardService.checkPage(page) + "&pageSize=" + pageSize;
+        return "redirect:/board?page="+ checkPage + "&pageSize=" + pageSize;
     }
 }

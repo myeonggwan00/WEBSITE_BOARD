@@ -1,22 +1,21 @@
 package com.example.firstproject.repository.h2.post;
 
-import com.example.firstproject.domain.Post;
-import com.example.firstproject.domain.SearchCondition;
+import com.example.firstproject.domain.jdbc.Post;
+import com.example.firstproject.domain.dto.SearchCondition;
 import com.example.firstproject.jdbc.connection.DBConnectionUtils;
 import com.example.firstproject.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 @Slf4j
-//@Repository
 public class H2PostRepositoryV1 implements PostRepository {
     @Override
     public void save(Post post) {
-        String sql = "insert into post (title, content, userName, registerTime, viewCnt) values (?, ?, ?, ?, ?)";
+        String sql = "insert into post (title, content, username, created_at, view_cnt) values (?, ?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -27,7 +26,7 @@ public class H2PostRepositoryV1 implements PostRepository {
 
             pstmt.setString(1, post.getTitle());
             pstmt.setString(2, post.getContent());
-            pstmt.setString(3, post.getUserName());
+            pstmt.setString(3, post.getUsername());
             pstmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
             pstmt.setLong(5, post.getViewCnt());
 
@@ -41,8 +40,8 @@ public class H2PostRepositoryV1 implements PostRepository {
     }
 
     @Override
-    public void modify(Long bno, Post updatePost) {
-        String sql = "update post set title = ?, content = ?, registerTime = ? where bno = ?";
+    public void modify(Long id, Post updatePost) {
+        String sql = "update post set title = ?, content = ?, created_at = ? where id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -54,7 +53,7 @@ public class H2PostRepositoryV1 implements PostRepository {
             pstmt.setString(1, updatePost.getTitle());
             pstmt.setString(2, updatePost.getContent());
             pstmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-            pstmt.setLong(4, bno);
+            pstmt.setLong(4, id);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -66,7 +65,7 @@ public class H2PostRepositoryV1 implements PostRepository {
 
     @Override
     public void updateViewCnt(Post post) {
-        String sql = "update post set viewCnt = viewCnt + 1 where bno = ?";
+        String sql = "update post set view_cnt = view_cnt + 1 where id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -75,7 +74,7 @@ public class H2PostRepositoryV1 implements PostRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setLong(1, post.getBno());
+            pstmt.setLong(1, post.getId());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -86,8 +85,8 @@ public class H2PostRepositoryV1 implements PostRepository {
     }
 
     @Override
-    public Optional<Post> findByBno(Long bno) {
-        String sql = "select * from post where bno = ?";
+    public Optional<Post> findById(Long id) {
+        String sql = "select * from post where id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -97,23 +96,23 @@ public class H2PostRepositoryV1 implements PostRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setLong(1, bno);
+            pstmt.setLong(1, id);
 
             rs = pstmt.executeQuery();
 
             if(rs.next()) {
                 Post post = new Post();
 
-                post.setBno(rs.getLong("bno"));
+                post.setId(rs.getLong("id"));
                 post.setTitle(rs.getString("title"));
                 post.setContent(rs.getString("content"));
-                post.setUserName(rs.getString("userName"));
-                post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-                post.setViewCnt(rs.getLong("viewCnt"));
+                post.setUsername(rs.getString("username"));
+                post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                post.setViewCnt(rs.getLong("view_cnt"));
 
                 return Optional.ofNullable(post);
             } else {
-                throw new NoSuchElementException("member not found bno = " + bno);
+                throw new NoSuchElementException("member not found id = " + id);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -144,12 +143,12 @@ public class H2PostRepositoryV1 implements PostRepository {
                 while(rs.next()) {
                     Post post = new Post();
 
-                    post.setBno(rs.getLong("bno"));
+                    post.setId(rs.getLong("id"));
                     post.setTitle(rs.getString("title"));
                     post.setContent(rs.getString("content"));
-                    post.setUserName(rs.getString("userName"));
-                    post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-                    post.setViewCnt(rs.getLong("viewCnt"));
+                    post.setUsername(rs.getString("username"));
+                    post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    post.setViewCnt(rs.getLong("view_cnt"));
 
                     postList.add(post);
                 }
@@ -166,8 +165,8 @@ public class H2PostRepositoryV1 implements PostRepository {
     }
 
     @Override
-    public void remove(Long bno) {
-        String sql = "delete from post where bno = ?";
+    public void remove(Long id) {
+        String sql = "delete from post where id = ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -176,7 +175,7 @@ public class H2PostRepositoryV1 implements PostRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
 
-            pstmt.setLong(1, bno);
+            pstmt.setLong(1, id);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -219,8 +218,8 @@ public class H2PostRepositoryV1 implements PostRepository {
             pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, "%"+keyword+"%");
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
+            pstmt.setInt(2, limit);
+            pstmt.setInt(3, offset);
 
             rs = pstmt.executeQuery();
 
@@ -228,12 +227,12 @@ public class H2PostRepositoryV1 implements PostRepository {
                 while(rs.next()) {
                     Post post = new Post();
 
-                    post.setBno(rs.getLong("bno"));
+                    post.setId(rs.getLong("id"));
                     post.setTitle(rs.getString("title"));
                     post.setContent(rs.getString("content"));
-                    post.setUserName(rs.getString("userName"));
-                    post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-                    post.setViewCnt(rs.getLong("viewCnt"));
+                    post.setUsername(rs.getString("username"));
+                    post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    post.setViewCnt(rs.getLong("view_cnt"));
 
                     postList.add(post);
                 }
@@ -273,12 +272,12 @@ public class H2PostRepositoryV1 implements PostRepository {
                 while(rs.next()) {
                     Post post = new Post();
 
-                    post.setBno(rs.getLong("bno"));
+                    post.setId(rs.getLong("id"));
                     post.setTitle(rs.getString("title"));
                     post.setContent(rs.getString("content"));
-                    post.setUserName(rs.getString("userName"));
-                    post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-                    post.setViewCnt(rs.getLong("viewCnt"));
+                    post.setUsername(rs.getString("username"));
+                    post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    post.setViewCnt(rs.getLong("view_cnt"));
 
                     postList.add(post);
                 }
@@ -296,7 +295,7 @@ public class H2PostRepositoryV1 implements PostRepository {
 
     @Override
     public List<Post> findByWriter(Integer offset, Integer limit, String keyword) {
-        String sql = "select * from post where userName like ? limit ? offset ?";
+        String sql = "select * from post where username like ? limit ? offset ?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -308,8 +307,8 @@ public class H2PostRepositoryV1 implements PostRepository {
             pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, "%"+keyword+"%");
-            pstmt.setInt(1, limit);
-            pstmt.setInt(2, offset);
+            pstmt.setInt(2, limit);
+            pstmt.setInt(3, offset);
 
             rs = pstmt.executeQuery();
 
@@ -317,12 +316,12 @@ public class H2PostRepositoryV1 implements PostRepository {
                 while(rs.next()) {
                     Post post = new Post();
 
-                    post.setBno(rs.getLong("bno"));
+                    post.setId(rs.getLong("id"));
                     post.setTitle(rs.getString("title"));
                     post.setContent(rs.getString("content"));
-                    post.setUserName(rs.getString("userName"));
-                    post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-                    post.setViewCnt(rs.getLong("viewCnt"));
+                    post.setUsername(rs.getString("username"));
+                    post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    post.setViewCnt(rs.getLong("view_cnt"));
 
                     postList.add(post);
                 }

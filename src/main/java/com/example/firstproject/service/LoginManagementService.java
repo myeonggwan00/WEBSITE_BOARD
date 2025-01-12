@@ -1,8 +1,8 @@
 package com.example.firstproject.service;
 
 import com.example.firstproject.SessionConst;
-import com.example.firstproject.domain.LoginMember;
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.dto.LoginMember;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.repository.MemberRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

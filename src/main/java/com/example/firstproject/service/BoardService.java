@@ -1,9 +1,9 @@
 package com.example.firstproject.service;
 
-import com.example.firstproject.domain.Member;
-import com.example.firstproject.domain.PageHandler;
-import com.example.firstproject.domain.Post;
-import com.example.firstproject.domain.SearchCondition;
+import com.example.firstproject.domain.jdbc.Member;
+import com.example.firstproject.domain.dto.PageHandler;
+import com.example.firstproject.domain.jdbc.Post;
+import com.example.firstproject.domain.dto.SearchCondition;
 import com.example.firstproject.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,15 +71,16 @@ public class BoardService {
      * 게시글을 저장하는 메서드
      */
     public void savePost(Member loginMember, Post post) {
-        post.setUserName(loginMember.getUsername());
+        post.setUsername(loginMember.getUsername());
+        log.info("username : {}", loginMember.getUsername());
         postRepository.save(post);
     }
 
     /**
      * 게시글에 대한 정보를 얻어오는 메서드
      */
-    public Post getPostInfo(Long bno) {
-        return postRepository.findByBno(bno).get();
+    public Post getPostInfo(Long id) {
+        return postRepository.findById(id).get();
     }
 
     /**
@@ -103,7 +104,7 @@ public class BoardService {
      * 게시글을 삭제하는 메서드
      */
     public void removePost(Post post) {
-        postRepository.remove(post.getBno());
+        postRepository.remove(post.getId());
     }
 
     /**

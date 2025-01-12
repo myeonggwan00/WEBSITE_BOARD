@@ -1,14 +1,11 @@
 package com.example.firstproject.repository.h2.post;
 
-import com.example.firstproject.domain.Post;
-import com.example.firstproject.domain.SearchCondition;
+import com.example.firstproject.domain.jdbc.Post;
+import com.example.firstproject.domain.dto.SearchCondition;
 import com.example.firstproject.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -27,30 +24,30 @@ public class H2PostRepositoryV3 implements PostRepository {
 
     @Override
     public void save(Post post) {
-        String sql = "insert into post (title, content, userName, registerTime, viewCnt) values (?, ?, ?, ?, ?)";
+        String sql = "insert into post (title, content, username, created_at, view_cnt) values (?, ?, ?, ?, ?)";
 
-        template.update(sql, post.getTitle(), post.getContent(), post.getUserName(), Timestamp.valueOf(LocalDateTime.now()), post.getViewCnt());
+        template.update(sql, post.getTitle(), post.getContent(), post.getUsername(), Timestamp.valueOf(LocalDateTime.now()), post.getViewCnt());
     }
 
     @Override
-    public void modify(Long bno, Post updatePost) {
-        String sql = "update post set title = ?, content = ?, registerTime = ? where bno = ?";
+    public void modify(Long id, Post updatePost) {
+        String sql = "update post set title = ?, content = ?, created_at = ? where id = ?";
 
-        template.update(sql, updatePost.getTitle(), updatePost.getContent(), Timestamp.valueOf(LocalDateTime.now()), bno);
+        template.update(sql, updatePost.getTitle(), updatePost.getContent(), Timestamp.valueOf(LocalDateTime.now()), id);
     }
 
     @Override
     public void updateViewCnt(Post post) {
-        String sql = "update post set viewCnt = viewCnt + 1 where bno = ?";
+        String sql = "update post set view_cnt = view_cnt + 1 where id = ?";
 
-        template.update(sql, post.getBno());
+        template.update(sql, post.getId());
     }
 
     @Override
-    public Optional<Post> findByBno(Long bno) {
-        String sql = "select * from post where bno = ?";
+    public Optional<Post> findById(Long id) {
+        String sql = "select * from post where id = ?";
 
-        return Optional.ofNullable(template.queryForObject(sql, postRowMapper(), bno));
+        return Optional.ofNullable(template.queryForObject(sql, postRowMapper(), id));
     }
 
     @Override
@@ -61,10 +58,10 @@ public class H2PostRepositoryV3 implements PostRepository {
     }
 
     @Override
-    public void remove(Long bno) {
-        String sql = "delete from post where bno = ?";
+    public void remove(Long id) {
+        String sql = "delete from post where id = ?";
 
-        template.update(sql, bno);
+        template.update(sql, id);
     }
 
     @Override
@@ -111,12 +108,12 @@ public class H2PostRepositoryV3 implements PostRepository {
         return (rs, rowNum) -> {
             Post post = new Post();
 
-            post.setBno(rs.getLong("bno"));
+            post.setId(rs.getLong("id"));
             post.setTitle(rs.getString("title"));
             post.setContent(rs.getString("content"));
-            post.setUserName(rs.getString("userName"));
-            post.setRegisterTime(rs.getTimestamp("registerTime").toLocalDateTime());
-            post.setViewCnt(rs.getLong("viewCnt"));
+            post.setUsername(rs.getString("username"));
+            post.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            post.setViewCnt(rs.getLong("view_cnt"));
 
             return post;
         };

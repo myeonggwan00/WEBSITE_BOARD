@@ -1,7 +1,7 @@
 package com.example.firstproject.service;
 
-import com.example.firstproject.domain.Comment;
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Comment;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,33 +15,33 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    public Comment saveComment(Member loginMember, Long bno, Comment comment) {
-        comment.setPostBno(bno);
+    public Comment saveComment(Member loginMember, Long postId, Comment comment) {
+        comment.setPostId(postId);
         comment.setUserId(loginMember.getLoginId());
 
         return commentRepository.save(comment);
     }
 
-    public void modifyComment(Long cno, String modifyComment) {
-        commentRepository.modify(cno, modifyComment);
+    public void modifyComment(Long commentId, String modifyComment) {
+        commentRepository.modify(commentId, modifyComment);
     }
 
-    public List<Comment> getCommentsByPostBno(Long bno) {
-        return commentRepository.findByPostBno(bno);
+    public List<Comment> getCommentsByPostId(Long postId) {
+        return commentRepository.findByPostId(postId);
     }
 
     public List<Comment> getReplies() {
         return commentRepository.getReplies();
     }
 
-    public void deleteCommentByCno(Long cno) {
-        commentRepository.delete(cno);
+    public void deleteCommentByCommentId(Long commentId) {
+        commentRepository.delete(commentId);
     }
 
-    public Comment saveReply(Member loginMember, Long bno, Long pcno, String replyContent) {
+    public Comment saveReply(Member loginMember, Long postId, Long parentCommentId, String replyContent) {
         Comment comment = new Comment();
-        comment.setPcno(pcno);
-        comment.setPostBno(bno);
+        comment.setParentCommentId(parentCommentId);
+        comment.setPostId(postId);
         comment.setUserId(loginMember.getLoginId());
         comment.setContent(replyContent);
 

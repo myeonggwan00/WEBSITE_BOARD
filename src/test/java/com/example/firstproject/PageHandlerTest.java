@@ -1,6 +1,6 @@
 package com.example.firstproject;
 
-import com.example.firstproject.domain.PageHandler;
+import com.example.firstproject.domain.dto.PageHandler;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;

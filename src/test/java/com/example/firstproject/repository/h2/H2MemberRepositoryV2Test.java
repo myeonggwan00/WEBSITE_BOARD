@@ -1,6 +1,6 @@
 package com.example.firstproject.repository.h2;
 
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.repository.h2.member.H2MemberRepositoryV2;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;

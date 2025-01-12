@@ -1,7 +1,7 @@
 package com.example.firstproject.controller;
 
 import com.example.firstproject.SessionConst;
-import com.example.firstproject.domain.Member;
+import com.example.firstproject.domain.jdbc.Member;
 import com.example.firstproject.service.UserManagementService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

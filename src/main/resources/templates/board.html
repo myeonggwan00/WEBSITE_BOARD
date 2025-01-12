@@ -148,61 +148,61 @@
 <body>
 <div th:replace="~{fragement/fragmentHeader :: header}"></div>
 <div class="container">
-    <form id="form" class="frm" th:action="@{/posts/{bno}/delete(bno=${post.getBno()}, page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
+    <form id="form" class="frm" th:action="@{/posts/{id}/delete(id=${post.getId()}, page=${param.page}, pageSize=${param.pageSize})}" th:object="${post}" method="post">
         <div class="form-header">
             <h2 class="writing-header">게시판 글</h2>
             <div class="form-header-btn">
-                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.userName == session.loginMember?.username}" th:onclick="|location.href='@{/posts/{bno}/edit(bno=${post.bno}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
-                <button id="removeBtn" class="btn btn-remove" th:if="${post.userName == session.loginMember?.username}"><i class="fa fa-trash"></i> 삭제</button>
+                <button type="button" id="modifyBtn" class="btn btn-modify" th:if="${post.username == session.loginMember?.username}" th:onclick="|location.href='@{/posts/{id}/edit(id=${post.id}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-edit"></i> 수정</button>
+                <button id="removeBtn" class="btn btn-remove" th:if="${post.username == session.loginMember?.username}"><i class="fa fa-trash"></i> 삭제</button>
                 <button type="button" id="listBtn" class="btn btn-list" th:onclick="|location.href='@{/board(option=${param.option}, keyword=${param.keyword}, page=${param.page}, pageSize=${param.pageSize})}'|"><i class="fa fa-bars"></i> 목록</button>
             </div>
         </div>
-        <input type="hidden" th:field="*{bno}">
+        <input type="hidden" th:field="*{id}">
         <input type="text" th:field="*{title}" placeholder="제목을 입력해 주세요." readonly><br>
         <textarea rows="20" th:field="*{content}" placeholder="내용을 입력해 주세요." readonly></textarea><br>
     </form>
     <div id="commentList">
         <ul>
-            <li th:each="comment : ${comments}" th:if="${comment.pcno == null}" th:attr="data-cno=${comment.cno}">
+            <li th:each="comment : ${comments}" th:if="${comment.parentCommentId == null}" th:attr="data-cno=${comment.id}">
                 <div class="comment-area">
                     <div class="commenter" th:text="${comment.userId}">테스터</div>
                     <div class="comment-content" th:text="${comment.content}">댓글</div>
                     <div class="comment-bottom">
-                        <span class="up_date" th:text="${{comment.registerTime}}">2022.01.01 23:59:59</span>
-                        <a th:href="|javascript:addReply(${bno}, ${comment.cno})|"
+                        <span class="up_date" th:text="${{comment.createdAt}}">2022.01.01 23:59:59</span>
+                        <a th:href="|javascript:addReply(${id}, ${comment.id})|"
                            class="btn-write"
-                           th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">답글쓰기</a>
+                           th:attr="data-cno=${comment.id}, data-pcno=${comment.parentCommentId}">답글쓰기</a>
                         <a th:if="${comment.userId == session.loginMember?.loginId}"
-                           th:href="|javascript:modifyComment(${bno}, ${comment.cno}, '${comment.content}')|"
+                           th:href="|javascript:modifyComment(${id}, ${comment.id}, '${comment.content}')|"
                            class="btn-modify"
-                           th:attr="data-cno=${comment.cno}, data-pcno=${comment.pcno}">수정</a>
+                           th:attr="data-cno=${comment.id}, data-pcno=${comment.parentCommentId}">수정</a>
                         <a th:if="${comment.userId == session.loginMember?.loginId}"
-                           th:href="|javascript:deleteComment(${bno}, ${comment.cno})|"
+                           th:href="|javascript:deleteComment(${id}, ${comment.id})|"
                            class="btn-delete"
-                           th:attr="data-bno=${bno} ,data-cno=${comment.cno}, data-pcno=${comment.pcno}">삭제</a>
+                           th:attr="data-bno=${id} ,data-cno=${comment.id}, data-pcno=${comment.parentCommentId}">삭제</a>
                     </div>
                 </div>
-                <div th:each="reply : ${replies}" th:if="${reply.pcno == comment.cno}" th:attr="data-cno=${reply.cno}">
+                <div th:each="reply : ${replies}" th:if="${reply.parentCommentId == comment.id}" th:attr="data-cno=${reply.id}">
                     <div class="comment-area child-comment">
                         <div class="commenter" th:text="${reply.userId}">테스터</div>
                         <div class="comment-content" th:text="${reply.content}">댓글</div>
                         <div class="comment-bottom">
-                            <span class="up_date" th:text="${{reply.registerTime}}">2022.01.01 23:59:59</span>
+                            <span class="up_date" th:text="${{reply.createdAt}}">2022.01.01 23:59:59</span>
                             <a th:if="${reply.userId == session.loginMember?.loginId}"
-                               th:href="|javascript:modifyComment(${bno}, ${reply.cno}, '${reply.content}')|"
+                               th:href="|javascript:modifyComment(${id}, ${reply.id}, '${reply.content}')|"
                                class="btn-modify"
-                               th:attr="data-cno=${reply.cno}, data-pcno=${reply.pcno}">수정</a>
+                               th:attr="data-cno=${reply.id}, data-pcno=${reply.parentCommentId}">수정</a>
                             <a th:if="${reply.userId == session.loginMember?.loginId}"
-                               th:href="|javascript:deleteComment(${bno}, ${reply.cno})|"
+                               th:href="|javascript:deleteComment(${id}, ${reply.id})|"
                                class="btn-delete"
-                               th:attr="data-bno=${bno} ,data-cno=${reply.cno}, data-pcno=${reply.pcno}">삭제</a>
+                               th:attr="data-bno=${id} ,data-cno=${reply.id}, data-pcno=${reply.parentCommentId}">삭제</a>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
-    <form id="comment" class="comment" th:action="@{/posts/{bno}/comment(bno=${post.bno})}" th:object="${comment}" method="post">
+    <form id="comment" class="comment" th:action="@{/posts/{id}/comment(id=${post.id})}" th:object="${comment}" method="post">
         <!-- 댓글 작성 폼 -->
         <div id="comment-writebox">
             <div class="commenter commenter-writebox" th:text="${loginMember?.loginId eq null ? '게스트' : loginMember.loginId}">사용자</div>
@@ -217,15 +217,15 @@
         </div>
     </form>
     <script th:inline="javascript">
-        function deleteComment(bno, cno) {
+        function deleteComment(postId, commentId) {
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + cno + '/delete');
+            pageMoveForm.setAttribute('action', '/posts/' + postId + '/comment/' + commentId + '/delete');
             document.body.appendChild(pageMoveForm);
             pageMoveForm.submit();
         }
 
-        function addReply(bno, pcno) {
+        function addReply(postId, parentCommentId) {
             $("#comment-modifybox").css("display", "none");
             $("#comment-writebox").css("display", "none");
 
@@ -237,7 +237,7 @@
 
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + pcno + '/reply');
+            pageMoveForm.setAttribute('action', '/posts/' + postId + '/comment/' + parentCommentId + '/reply');
             pageMoveForm.id = 'addReplyForm';
 
             // 1. 최상위 div 생성
@@ -312,7 +312,7 @@
             };
         }
 
-        function modifyComment(bno, cno, comment) {
+        function modifyComment(postId, commentId, comment) {
             $("#comment-writebox").css("display", "none");
             $("#reply-writebox").css("display", "none");
 
@@ -324,7 +324,7 @@
 
             let pageMoveForm = document.createElement('form');
             pageMoveForm.setAttribute('method', 'post');
-            pageMoveForm.setAttribute('action', '/posts/' + bno + '/comment/' + cno + '/modify');
+            pageMoveForm.setAttribute('action', '/posts/' + postId + '/comment/' + commentId + '/modify');
             pageMoveForm.id = 'modifyCommentForm';
 
             // 1. 최상위 div 생성
@@ -335,7 +335,7 @@
             // 2. commenter div 생성
             const commenterDiv = document.createElement('div');
             commenterDiv.className = 'commenter commenter-writebox';
-            commenterDiv.textContent = [[${loginMember?.id eq null ? '게스트' : loginMember.id}]]; // 텍스트 설정
+            commenterDiv.textContent = [[${loginMember?.loginId eq null ? '게스트' : loginMember.loginId}]]; // 텍스트 설정
             commentModifyBox.appendChild(commenterDiv);
 
             // 3. comment-writebox-content div 생성
@@ -377,8 +377,8 @@
                 commentModifyBox.remove(); // 작성 박스 삭제
                 $("#comment-writebox").css("display", "");
             };
-            registerBox.appendChild(cancelLink);
 
+            registerBox.appendChild(cancelLink);
             bottomDiv.appendChild(registerBox);
             commentModifyBox.appendChild(bottomDiv);
 

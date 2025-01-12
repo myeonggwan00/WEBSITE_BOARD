@@ -1,7 +1,10 @@
-package com.example.firstproject.domain;
+package com.example.firstproject.domain.jdbc;
 
+import com.example.firstproject.domain.dto.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class Member {
@@ -15,6 +18,12 @@ public class Member {
 
     @NotBlank
     private String username;
+
+    private String nickname;
+
+    private Role role;
+
+    private LocalDateTime createdAt;
 
     public Member() {}
 
